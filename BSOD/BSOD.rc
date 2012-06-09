@@ -1,0 +1,235 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#include ""res\\BSOD.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""l.CHS\\afxres.rc""      // 标准组件\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\BSOD.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "关于 BSOD"
+FONT 9, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,14,14,20,20
+    LTEXT           "BSOD，1.0 版 ——By Samren",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2012",IDC_STATIC,63,26,92,9
+    DEFPUSHBUTTON   "确定",IDOK,113,41,50,14,WS_GROUP
+END
+
+IDD_BSOD_DIALOG DIALOGEX 0, 0, 463, 378
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "BSOD"
+FONT 9, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "添加",IDOK_ADD_FUNCTION,386,29,37,16
+    PUSHBUTTON      "Go",IDFUZZ,303,277,50,14
+    CTEXT           "函数名",IDC_FUNCTION_NAME,306,84,30,10
+    EDITTEXT        IDC_EDIT_INPUT,295,30,80,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_FUNCTION_NAME,335,81,84,14,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_EDIT_FUNCTION_ARGS,335,101,83,14,ES_AUTOHSCROLL | ES_READONLY
+    EDITTEXT        IDC_EDIT_FUNCTION_DLLNAME,335,122,83,14,ES_AUTOHSCROLL | ES_READONLY
+    LISTBOX         IDC_LIST_TO_TEST,295,145,125,99,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    LTEXT           "函数名",IDC_FUNCTION_INPUT,269,33,23,8
+    CTEXT           "参数名",IDC_FUNCTION_ARGS,305,104,30,10
+    CTEXT           "模块名",IDC_FUNCTION_DLLNAME,306,123,30,10
+    PUSHBUTTON      "删除",IDC_RM_BUTTON,366,277,49,14
+    EDITTEXT        IDC_EDIT_SHOW_LOG,7,332,449,39,ES_MULTILINE | ES_AUTOHSCROLL
+    LTEXT           "Event Log:",IDC_EVENT_LOG,12,319,35,8
+    CONTROL         "Log to file name:",IDC_CHECK_LOG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,99,319,63,10
+    EDITTEXT        IDC_EDIT2,180,316,131,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Delete Log",IDC_BTN_DEL_LOG,318,317,38,12
+    LTEXT           "Fuzzer-loops:",IDC_STATIC,273,53,41,8
+    CONTROL         "",IDC_CHECK_LOOPS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,264,53,8,10
+    EDITTEXT        IDC_EDIT_FUZZER_LOOPS,316,50,41,14,ES_AUTOHSCROLL
+    LTEXT           ",seed:",IDC_STATIC,360,53,20,8
+    EDITTEXT        IDC_EDIT_SEED,386,50,53,14,ES_AUTOHSCROLL
+    GROUPBOX        "Static",IDC_STATIC,294,249,125,25
+    CONTROL         "",IDC_PROGRESS_FUNCTION,"msctls_progress32",WS_BORDER,352,256,64,14
+    LTEXT           "Function:",IDC_STATIC,298,261,30,8
+    CONTROL         "",IDC_RICHEDIT_SHOW,"RichEdit20W",ES_MULTILINE | ES_AUTOHSCROLL | WS_BORDER | WS_VSCROLL | WS_HSCROLL | WS_TABSTOP,9,130,232,153
+    CONTROL         "",IDC_LIST_XML,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,10,18,232,81,WS_EX_RIGHT
+    PUSHBUTTON      "浏览...",IDC_BTN_BROWSE,144,102,32,15
+    PUSHBUTTON      "删除",IDC_BTN_XML_DEL,180,101,31,16
+    EDITTEXT        IDC_EDIT_XML_PATH,11,103,130,14,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "另存为",IDC_BTN_XML_SAVE_AS,49,287,31,14
+    PUSHBUTTON      "保存",IDC_BTN_XML_SAVE,10,286,33,14
+    GROUPBOX        "XML Path:",IDC_STATIC,7,6,240,114
+    GROUPBOX        "XML Manager:",IDC_STATIC,7,120,240,184
+    PUSHBUTTON      "Go",IDC_BTN_XML_FUZZ,177,286,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080403a8"
+        BEGIN
+            VALUE "CompanyName", "TODO: <公司名>"
+            VALUE "FileDescription", "TODO: <文件说明>"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "BSOD.exe"
+            VALUE "LegalCopyright", "TODO: (C) <公司名>。保留所有权利。"
+            VALUE "OriginalFilename", "BSOD.exe"
+            VALUE "ProductName", "TODO: <产品名>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 936
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+
+    IDD_BSOD_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 456
+        TOPMARGIN, 6
+        BOTTOMMARGIN, 371
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_ABOUTBOX            "关于 BSOD(&A)..."
+END
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE 4, 2
+#pragma code_page(936)
+#include "res\BSOD.rc2"  // 非 Microsoft Visual C++ 编辑的资源
+#include "l.CHS\afxres.rc"      // 标准组件
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

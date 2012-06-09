@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BSOD", "BSOD\BSOD.vcproj", "{79FDAC56-6460-4030-B695-459E2DA5B2B3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMe", "TestMe\TestMe.vcproj", "{B44D0338-6D0B-459B-87F9-40EE4C67DF13}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMfc", "TestMfc\TestMfc.vcproj", "{8092AC3F-7B1E-46DB-80FD-4142F92D25CC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79FDAC56-6460-4030-B695-459E2DA5B2B3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{79FDAC56-6460-4030-B695-459E2DA5B2B3}.Debug|Win32.Build.0 = Debug|Win32
+		{79FDAC56-6460-4030-B695-459E2DA5B2B3}.Release|Win32.ActiveCfg = Release|Win32
+		{79FDAC56-6460-4030-B695-459E2DA5B2B3}.Release|Win32.Build.0 = Release|Win32
+		{B44D0338-6D0B-459B-87F9-40EE4C67DF13}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B44D0338-6D0B-459B-87F9-40EE4C67DF13}.Debug|Win32.Build.0 = Debug|Win32
+		{B44D0338-6D0B-459B-87F9-40EE4C67DF13}.Release|Win32.ActiveCfg = Release|Win32
+		{B44D0338-6D0B-459B-87F9-40EE4C67DF13}.Release|Win32.Build.0 = Release|Win32
+		{8092AC3F-7B1E-46DB-80FD-4142F92D25CC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8092AC3F-7B1E-46DB-80FD-4142F92D25CC}.Debug|Win32.Build.0 = Debug|Win32
+		{8092AC3F-7B1E-46DB-80FD-4142F92D25CC}.Release|Win32.ActiveCfg = Release|Win32
+		{8092AC3F-7B1E-46DB-80FD-4142F92D25CC}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

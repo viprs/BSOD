@@ -1,0 +1,424 @@
+#
+NtAdjustPrivilegesToken DDDDDD ntdll.dll
+NtCreateFile DDODDDDDDDD ntdll.dll
+# functions' calling convention database
+# every line that starts with # or is empty is ignored
+# every line with function has three parts divided by a space
+# the first part is the name of the function
+# the second part is its calling convention
+# the third part is the name of the system module, which exports this function
+#
+# the calling convention is a string that consists of characters V, D, B, P, O, Q and U only
+# for N-argument function, the calling convetion string must contain exactly N characters
+#
+#   V   - the argument is valid and static, fuzzer does not manipulate this argument, bruteforcer skip it
+#   D   - the argument is probed in range 0x00000000 - 0xFFFFFFFF
+#   P   - the argument is probed in range 0x00000001 - 0xFFFFFF00
+#   B   - the argument is probed in range 0x7FFF0001 - 0xFFFFFFFF
+#   O   - the argument is OBJECT_ATTRIBUTES structure with ObjectName probed as D
+#   Q   - the argument is OBJECT_ATTRIBUTES structure with ObjectName.Buffer probed as D
+#   U   - the argument is UNICODE_STRING structure with Buffer probed as D
+#
+
+# NtAdjustPrivilegesToken(HANDLE TokenHandle,BOOLEAN DisableAllPrivileges,PTOKEN_PRIVILEGES TokenPrivileges,ULONG PreviousPrivilegesLength,
+#                         PTOKEN_PRIVILEGES PreviousPrivileges,PULONG RequiredLength);
+NtAdjustPrivilegesToken DDDDDD ntdll.dll
+
+# NtAlertResumeThread(HANDLE ThreadHandle,PULONG PreviousSuspendCount);
+NtAlertResumeThread PD ntdll.dll
+
+# NtAlertThread(HANDLE ThreadHandle);
+NtAlertThread P ntdll.dll
+
+# NtAllocateVirtualMemory(HANDLE ProcessHandle,PVOID *BaseAddress,ULONG ZeroBits,PULONG AllocationSize,ULONG AllocationType,ULONG Protect);
+NtAllocateVirtualMemory PDDDDD ntdll.dll
+
+# NtAssignProcessToJobObject(HANDLE JobHandle,HANDLE ProcessHandle);
+NtAssignProcessToJobObject DP ntdll.dll
+
+# NtClose(HANDLE Handle);
+NtClose B ntdll.dll
+
+# NtConnectPort(PHANDLE PortHandle,PUNICODE_STRING PortName,PSECURITY_QUALITY_OF_SERVICE SecurityQos,
+#               PPORT_SECTION_WRITE WriteSection,PPORT_SECTION_READ ReadSection,PULONG MaxMessageSize,
+#               PVOID ConnectData,PULONG ConnectDataLength);
+NtConnectPort DUDDDDDD ntdll.dll
+
+# NtCreateFile(PHANDLE FileHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,
+#              PIO_STATUS_BLOCK IoStatusBlock,PLARGE_INTEGER AllocationSize,ULONG FileAttributes,
+#              ULONG ShareAccess,ULONG CreateDisposition,ULONG CreateOptions,PVOID EaBuffer,ULONG EaLength);
+NtCreateFile DDODDDDDDDD ntdll.dll
+
+# NtCreateKey(PHANDLE KeyHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,ULONG TitleIndex,
+#             PUNICODE_STRING Class,ULONG CreateOptions,PULONG Disposition);
+NtCreateKey BDODUDD ntdll.dll
+
+# NtCreateMutant(PHANDLE MutantHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,BOOLEAN InitialOwner);
+NtCreateMutant DDOD ntdll.dll
+
+# NtCreatePort(PHANDLE PortHandle,POBJECT_ATTRIBUTES ObjectAttributes,ULONG MaxDataSize,ULONG MaxMessageSize,ULONG Reserved);
+NtCreatePort DODDD ntdll.dll
+
+# NtCreateProcess(PHANDLE ProcessHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,
+#                 HANDLE ParentProcess,BOOLEAN InheritObjectTable,HANDLE SectionHandle,HANDLE DebugPort,
+#                 HANDLE ExceptionPort);
+NtCreateProcess DDODDDDD ntdll.dll
+
+# NtCreateProcessEx(PHANDLE ProcessHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,
+#                   HANDLE ParentProcess,BOOLEAN InheritObjectTable,HANDLE SectionHandle,HANDLE DebugPort,
+#                   HANDLE ExceptionPort,HANDLE Unknown);
+NtCreateProcessEx DDODDDDDD ntdll.dll
+
+# NtCreateSection(PHANDLE SectionHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,
+#                 PLARGE_INTEGER SectionSize,ULONG Protect,ULONG Attributes,HANDLE FileHandle);
+NtCreateSection DDODDDD ntdll.dll
+
+# NtCreateSymbolicLinkObject(PHANDLE SymbolicLinkHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,PUNICODE_STRING TargetName);
+NtCreateSymbolicLinkObject DDOU ntdll.dll
+
+# NtCreateThread(PHANDLE ThreadHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,
+#                HANDLE ProcessHandle,PCLIENT_ID ClientId,PVOID ThreadContext,PVOID UserStack,BOOLEAN CreateSuspended);
+NtCreateThread DDODDDDD ntdll.dll
+
+# NtCreateWaitablePort(PHANDLE PortHandle,POBJECT_ATTRIBUTES ObjectAttributes,ULONG MaxConnectionInfoLength,ULONG MaxMessageLength,ULONG MaxPoolUsage);
+NtCreateWaitablePort DODDD ntdll.dll
+
+# NtDebugActiveProcess(HANDLE Process,HANDLE DebugObject);
+NtDebugActiveProcess PP ntdll.dll
+
+# NtDeleteFile(POBJECT_ATTRIBUTES ObjectAttributes);
+NtDeleteFile O ntdll.dll
+
+# NtDeleteKey(HANDLE KeyHandle);
+NtDeleteKey B ntdll.dll
+
+# NtDeleteValueKey(HANDLE KeyHandle,PUNICODE_STRING ValueName);
+NtDeleteValueKey BU ntdll.dll
+
+# NtDeviceIoControlFile(HANDLE FileHandle,HANDLE Event,PIO_APC_ROUTINE ApcRoutine,PVOID ApcContext,PIO_STATUS_BLOCK IoStatusBlock,
+#                       ULONG IoControlCode,PVOID InputBuffer,ULONG InputBufferLength,PVOID OutputBuffer,ULONG OutputBufferLength));
+NtDeviceIoControlFile DDDDDDDDDD ntdll.dll
+
+# NtDuplicateObject(HANDLE SourceProcessHandle,HANDLE SourceHandle,HANDLE TargetProcessHandle,PHANDLE TargetHandle,
+#                   ACCESS_MASK DesiredAccess,ULONG Attributes,ULONG Options);
+NtDuplicateObject DDDBDDD ntdll.dll
+
+# NtEnumerateKey(HANDLE KeyHandle,ULONG Index,KEY_INFORMATION_CLASS KeyInformationClass,PVOID KeyInformation,
+#                ULONG KeyInformationLength,PULONG ResultLength);
+NtEnumerateKey DDDDDD ntdll.dll
+
+# NtEnumerateKey(HANDLE KeyHandle,ULONG Index,KEY_INFORMATION_CLASS KeyInformationClass,PVOID KeyInformation,
+#                ULONG KeyInformationLength,PULONG ResultLength);
+NtEnumerateKey DDDDDD ntdll.dll
+
+# NtEnumerateValueKey(HANDLE KeyHandle,ULONG Index,KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,PVOID KeyValueInformation,
+#                ULONG KeyValueInformationLength,PULONG ResultLength);
+NtEnumerateValueKey DDDDDD ntdll.dll
+
+# NtFlushKey(HANDLE KeyHandle);
+NtFlushKey D ntdll.dll
+
+# NtFreeVirtualMemory(HANDLE ProcessHandle,PVOID *BaseAddress,PULONG FreeSize,ULONG FreeType);
+NtFreeVirtualMemory PDDD ntdll.dll
+
+# NtFsControlFile(HANDLE FileHandle,HANDLE Event,PIO_APC_ROUTINE ApcRoutine,PVOID ApcContext,
+#                 PIO_STATUS_BLOCK IoStatusBlock,ULONG FsControlCode,PVOID InputBuffer,
+#                 ULONG InputBufferLength,PVOID OutputBuffer,ULONG OutputBufferLength);
+NtFsControlFile DDDDDDDDDD ntdll.dll
+
+# NtImpersonateAnonymousToken(HANDLE ThreadHandle);
+NtImpersonateAnonymousToken P ntdll.dll
+
+# NtImpersonateThread(HANDLE ThreadHandle,HANDLE TargetThreadHandle,PSECURITY_QUALITY_OF_SERVICE SecurityQos);
+NtImpersonateThread DDD ntdll.dll
+
+# NtInitializeRegistry(BOOLEAN Setup);
+NtInitializeRegistry D ntdll.dll
+
+# NtInitiatePowerAction(POWER_ACTION SystemAction,SYSTEM_POWER_STATE MinSystemState,ULONG Flags,BOOLEAN Asynchronous);
+NtInitiatePowerAction DDDD ntdll.dll
+
+# NtReplyWaitReceivePortEx(HANDLE PortHandle,PVOID *PortIdentifier,PLPC_MESSAGE ReplyMessage,PLPC_MESSAGE Message,
+#                          PLARGE_INTEGER Timeout);
+NtReplyWaitReceivePortEx DDDDD ntdll.dll
+
+# NtLoadDriver(PUNICODE_STRING DriverServiceName);
+NtLoadDriver U ntdll.dll
+
+# NtLoadKey(POBJECT_ATTRIBUTES KeyObjectAttributes,POBJECT_ATTRIBUTES FileObjectAttributes);
+NtLoadKey OO ntdll.dll
+
+# NtLoadKey2(POBJECT_ATTRIBUTES KeyObjectAttributes,POBJECT_ATTRIBUTES FileObjectAttributes,ULONG Flags);
+NtLoadKey2 OOD ntdll.dll
+
+# NtMakeTemporaryObject(HANDLE Handle);
+NtMakeTemporaryObject D ntdll.dll
+
+# NtMapViewOfSection(HANDLE SectionHandle,HANDLE ProcessHandle,PVOID *BaseAddress,ULONG ZeroBits,ULONG CommitSize,
+#                    PLARGE_INTEGER SectionOffset,PULONG ViewSize,SECTION_INHERIT InheritDisposition,
+#                    ULONG AllocationType,ULONG Protect);
+NtMapViewOfSection DDDDDDDDDD ntdll.dll
+
+# NtNotifyChangeKey(HANDLE KeyHandle,HANDLE EventHandle,PIO_APC_ROUTINE ApcRoutine,PVOID ApcContext,PIO_STATUS_BLOCK IoStatusBlock,
+#                   ULONG NotifyFilter,BOOLEAN WatchSubtree,PVOID Buffer,ULONG BufferLength,BOOLEAN Asynchronous);
+NtNotifyChangeKey DDDDDDDDDD ntdll.dll
+
+# NtOpenEvent(PHANDLE EventHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes);
+NtOpenEvent DDO ntdll.dll
+
+# NtOpenKey(PHANDLE KeyHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes);
+NtOpenKey BDO ntdll.dll
+
+# NtOpenFile(PHANDLE FileHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,
+#            PIO_STATUS_BLOCK IoStatusBlock,ULONG ShareAccess,ULONG OpenOptions);
+NtOpenFile DDODDD ntdll.dll
+
+# NtOpenProcess(PHANDLE ProcessHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,PCLIENT_ID ClientId);
+NtOpenProcess DDOD ntdll.dll
+
+# NtOpenProcessToken(HANDLE ProcessHandle,ACCESS_MASK DesiredAccess,PHANDLE TokenHandle);
+NtOpenProcessToken DDD ntdll.dll
+
+# NtOpenSection(PHANDLE SectionHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes);
+NtOpenSection BDO ntdll.dll
+
+# NtOpenThread(PHANDLE ThreadHandle,ACCESS_MASK DesiredAccess,POBJECT_ATTRIBUTES ObjectAttributes,PCLIENT_ID ClientId);
+NtOpenThread DDOD ntdll.dll
+
+# NtOpenThreadToken(HANDLE ThreadHandle,ACCESS_MASK DesiredAccess,BOOLEAN OpenAsSelf,PHANDLE TokenHandle);
+NtOpenThreadToken DDDD ntdll.dll
+
+# NtProtectVirtualMemory(HANDLE ProcessHandle,PVOID *BaseAddress,PSIZE_T ProtectSize,ULONG NewProtect,PULONG OldProtect);
+NtProtectVirtualMemory PBDDB ntdll.dll
+
+# NtQueryDirectoryFile(HANDLE FileHandle,HANDLE Event,PIO_APC_ROUTINE ApcRoutine,PVOID ApcContext,PIO_STATUS_BLOCK IoStatusBlock,
+#                      PVOID FileInformation,ULONG FileInformationLength,FILE_INFORMATION_CLASS FileInformationClass,
+#                      BOOLEAN ReturnSingleEntry,PUNICODE_STRING FileName,BOOLEAN RestartScan);
+NtQueryDirectoryFile DDDDDDDDDUD ntdll.dll
+
+# NtQueryKey(HANDLE KeyHandle,KEY_INFORMATION_CLASS KeyInformationClass,PVOID KeyInformation,ULONG KeyInformationLength,PULONG ResultLength);
+NtQueryKey DDDDB ntdll.dll
+
+# NtQueryMultipleValueKey(HANDLE KeyHandle,PKEY_VALUE_ENTRY ValueList,ULONG NumberOfValues,PVOID Buffer,PULONG Length,PULONG ReturnLength);
+NtQueryMultipleValueKey DDDDDD ntdll.dll
+
+# NtQuerySystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,PVOID SystemInformation,ULONG SystemInformationLength,PULONG ReturnLength);
+NtQuerySystemInformation DDDD ntdll.dll
+
+# NtQueryValueKey(HANDLE KeyHandle,PUNICODE_STRING ValueName,KEY_VALUE_INFORMATION_CLASS KeyValueInformationClass,
+#                 PVOID KeyValueInformation,ULONG KeyValueInformationLength,PULONG ResultLength);
+NtQueryValueKey DUDDDB ntdll.dll
+
+# NtQueueApcThread(HANDLE ThreadHandle,PIO_APC_ROUTINE ApcRoutine,PVOID ApcRoutineContext,PIO_STATUS_BLOCK ApcStatusBlock,ULONG ApcReserved); 
+NtQueueApcThread PDDDD ntdll.dll
+
+# NtReadFile(HANDLE FileHandle,HANDLE Event,PIO_APC_ROUTINE ApcRoutine,PVOID ApcContextL,PIO_STATUS_BLOCK IoStatusBlock,
+#            PVOID Buffer,ULONG Length,PLARGE_INTEGER ByteOffset,PULONG Key);
+NtReadFile DDDDDDDDD ntdll.dll
+
+# NtReadFileScatter(HANDLE FileHandle,HANDLE Event,PIO_APC_ROUTINE ApcRoutine,PVOID ApcContext,PIO_STATUS_BLOCK IoStatusBlock,
+#                   FILE_SEGMENT_ELEMENT SegmentArray,ULONG Length,PLARGE_INTEGER ByteOffset,PULONG Key); 
+NtReadFileScatter DBDDDDDDD ntdll.dll
+
+
+# NtReadVirtualMemory(HANDLE ProcessHandle,PVOID BaseAddress,PVOID Buffer,ULONG NumberOfBytesToRead,PULONG NumberOfBytesReaded);
+NtReadVirtualMemory PDDDB ntdll.dll        
+
+# NtRenameKey(HANDLE KeyHandle,PUNICODE_STRING ReplacementName);
+NtRenameKey BU ntdll.dll
+
+# NtReplaceKey(POBJECT_ATTRIBUTES NewFileObjectAttributes,HANDLE KeyHandle,POBJECT_ATTRIBUTES OldFileObjectAttributes);
+NtReplaceKey OBO ntdll.dll
+
+# NtRequestWaitReplyPort(HANDLE PortHandle,PPORT_MESSAGE RequestMessage,PPORT_MESSAGE ReplyMessage);
+NtRequestWaitReplyPort BDD ntdll.dll
+
+# NtRestoreKey(HANDLE KeyHandle,HANDLE FileHandle,ULONG Flags);
+NtRestoreKey BDD ntdll.dll
+
+# NtResumeThread(HANDLE ThreadHandle,PULONG PreviousSuspendCount);
+NtResumeThread DD ntdll.dll
+
+# NtSaveKey(HANDLE KeyHandle,HANDLE FileHandle);
+NtSaveKey DD ntdll.dll
+
+# NtSaveKeyEx(HANDLE KeyHandle,HANDLE FileHandle,ULONG Flags);
+NtSaveKeyEx DDD ntdll.dll
+
+# NtSecureConnectPort(PHANDLE PortHandle,PUNICODE_STRING PortName,PSECURITY_QUALITY_OF_SERVICE SecurityQos,
+#                     PPORT_SECTION_WRITE WriteSection,PSID ServerSid,PPORT_SECTION_READ ReadSection,
+#                     PULONG MaxMessageSize,PVOID ConnectData,PULONG ConnectDataLength);
+NtSecureConnectPort DUDDDDDDD ntdll.dll
+
+# NtSetContextThread(HANDLE ThreadHandle,PCONTEXT Context);
+NtSetContextThread PD ntdll.dll
+
+# NtSetInformationFile(HANDLE FileHandle,PIO_STATUS_BLOCK IoStatusBlock,PVOID FileInformation,
+#                      ULONG FileInformationLength,FILE_INFORMATION_CLASS FileInformationClass);
+NtSetInformationFile DDDDD ntdll.dll
+
+# NtSetInformationKey(HANDLE KeyHandle,KEY_SET_INFORMATION_CLASS KeyInformationClass,PVOID KeyInformation,ULONG KeyInformationLength);
+NtSetInformationKey BDDD ntdll.dll
+
+# NtSetInformationProcess(HANDLE ProcessHandle,PROCESSINFOCLASS ProcessInformationClass,PVOID ProcessInformation,ULONG ProcessInformationLength);
+NtSetInformationProcess DDDD ntdll.dll
+
+# NtSetInformationThread(HANDLE ThreadHandle,THREADINFOCLASS ThreadInformationClass,PVOID ThreadInformation,ULONG ThreadInformationLength);
+NtSetInformationThread DDDD ntdll.dll
+
+# NtSetSecurityObject(HANDLE Handle,SECURITY_INFORMATION SecurityInformation,PSECURITY_DESCRIPTOR SecurityDescriptor);
+NtSetSecurityObject DDD ntdll.dll
+
+# NtSetSystemInformation(SYSTEM_INFORMATION_CLASS SystemInformationClass,PVOID SystemInformation,ULONG SystemInformationLength);
+NtSetSystemInformation DDD ntdll.dll
+
+# NtSetSystemTime(PLARGE_INTEGER SystemTime,PLARGE_INTEGER PreviousTime); 
+NtSetSystemTime DD ntdll.dll
+
+# NtSetSystemPowerState(POWER_ACTION SystemAction,SYSTEM_POWER_STATE MinSystemState,ULONG Flags);
+NtSetSystemPowerState DDD ntdll.dll
+
+# NtSetValueKey(HANDLE KeyHandle,PUNICODE_STRING ValueName,ULONG TitleIndex,ULONG Type,PVOID Data,ULONG DataSize);
+NtSetValueKey BUDDDD ntdll.dll
+
+# NtShutdownSystem(SHUTDOWN_ACTION Action);
+NtShutdownSystem D ntdll.dll
+
+# NtSuspendProcess(HANDLE ProcessHandle);
+NtSuspendProcess P ntdll.dll
+
+# NtSuspendThread(HANDLE ThreadHandle,PULONG PreviousSuspendCount);
+NtSuspendThread PD ntdll.dll
+
+# NtSystemDebugControl(DEBUG_CONTROL_CODE ControlCode,PVOID InputBuffer,ULONG InputBufferLength,PVOID OutputBuffer,
+#                      ULONG OutputBufferLength,PULONG ReturnLength);
+NtSystemDebugControl DDDDDD ntdll.dll
+
+# NtTerminateJobObject(HANDLE JobHandle,NTSTATUS ExitStatus);
+NtTerminateJobObject DD ntdll.dll
+
+# NtTerminateProcess(HANDLE ProcessHandle,NTSTATUS ExitStatus);
+NtTerminateProcess PD ntdll.dll
+
+# NtTerminateThread(HANDLE ThreadHandle,NTSTATUS ExitStatus);
+NtTerminateThread PD ntdll.dll
+
+# NtUnloadDriver(PUNICODE_STRING DriverServiceName);
+NtUnloadDriver U ntdll.dll
+
+# NtUnloadKey(POBJECT_ATTRIBUTES KeyObjectAttributes);
+NtUnloadKey O ntdll.dll
+
+# NtUnmapViewOfSection(HANDLE ProcessHandle,PVOID BaseAddress);
+NtUnmapViewOfSection DD ntdll.dll
+
+# NtWriteFile(HANDLE FileHandle,HANDLE Event,PIO_APC_ROUTINE ApcRoutine,PVOID ApcContext,PIO_STATUS_BLOCK IoStatusBlock,
+#             PVOID Buffer,ULONG Length,PLARGE_INTEGER ByteOffset,PULONG Key);
+NtWriteFile DDDDDDDDD ntdll.dll
+
+# NtWriteFileGather(HANDLE FileHandle,HANDLE Event,PIO_APC_ROUTINE ApcRoutine,PVOID ApcContext,PIO_STATUS_BLOCK IoStatusBlock,
+#                   FILE_SEGMENT_ELEMENT SegmentArray,ULONG Length,PLARGE_INTEGER ByteOffset,PULONG Key);
+NtWriteFileGather DDDDDDDDD ntdll.dll
+
+# NtWriteVirtualMemory(HANDLE ProcessHandle,PVOID BaseAddress,PVOID Buffer,ULONG BufferLength,PULONG ReturnLength);
+NtWriteVirtualMemory PDDDB ntdll.dll
+
+
+
+
+#
+# GDI functions
+# always use "win32k.sys" as a module
+#
+
+# NtGdiBitBlt(HDC hDCDest,INT XDest,INT YDest,INT Width,INT Height,HDC hDCSrc,INT XSrc,INT YSrc,DWORD ROP,DWORD crBackColor,FLONG fl)
+NtGdiBitBlt DDDDDDDDDDD win32k.sys
+
+# NtGdiMaskBlt(HDC hdcDest,INT nXDest,INT nYDest,INT nWidth,INT nHeight,HDC hdcSrc,INT nXSrc,INT nYSrc,HBITMAP hbmMask,INT xMask,
+#              INT yMask,DWORD dwRop,DWORD crBackColor)
+NtGdiMaskBlt DDDDDDDDDDDDD win32k.sys
+
+# NtGdiPlgBlt(HDC hdcTrg,LPPOINT pptlTrg,HDC hdcSrc,INT xSrc,INT ySrc,INT cxSrc,INT cySrc,HBITMAP hbmMask,INT xMask,INT yMask,DWORD crBackColor)
+NtGdiPlgBlt DDDDDDDDDDD win32k.sys
+
+# NtGdiStretchBlt(HDC hDCDest,INT XOriginDest,INT YOriginDest,INT WidthDest,INT HeightDest,HDC hDCSrc,INT XOriginSrc,INT YOriginSrc,INT WidthSrc,
+#                 INT HeightSrc,DWORD ROP,DWORD dwBackColor)
+NtGdiStretchBlt DDDDDDDDDDDD win32k.sys
+
+# NtUserAttachThreadInput(DWORD Unknown1,DWORD Unknown2,DWORD Unknown3)
+NtUserAttachThreadInput DDD win32k.sys
+
+# NtUserBlockInput(BOOL BlockIt)
+NtUserBlockInput D win32k.sys
+
+# NtUserCallOneParam(ULONG Param,DWORD Routine)
+NtUserCallOneParam DD win32k.sys
+
+# NtUserCallTwoParam(ULONG Param1,ULONG Param2,DWORD Routine)
+NtUserCallTwoParam DDD win32k.sys
+
+# NtUserFindWindowEx(HWND hwndParent,HWND hwndChildAfter,PUNICODE_STRING ucClassName,PUNICODE_STRING ucWindowName,ULONG Unknown);
+NtUserFindWindowEx DDUUD win32k.sys
+
+# NtUserGetAsyncKeyState(int vKey)
+NtUserGetAsyncKeyState D win32k.sys
+
+# NtUserGetDC(HWND hWnd)
+NtUserGetDC D win32k.sys
+
+# NtUserGetKeyboardState(PBYTE lpKeyState)
+NtUserGetKeyboardState B win32k.sys
+
+# NtUserGetKeyNameText(LONG lParam,LPWSTR lpString,UINT nSize)
+NtUserGetKeyNameText DDD win32k.sys
+
+# NtUserGetKeyState(int vKey)
+NtUserGetKeyState D win32k.sys
+
+# NtUserGetRawInputBuffer(PRAWINPUT pData,PUINT pcbSize,UINT cbSizeHeader);
+NtUserGetRawInputBuffer DDD win32k.sys
+
+# NtUserGetRawInputData(HRAWINPUT hRawInput,UINT uiCommand,LPVOID pData,PUINT pcbSize,UINT cbSizeHeader)
+NtUserGetRawInputData DDDDD win32k.sys
+
+# NtUserMessageCall(HWND hWnd,UINT Msg,WPARAM wParam,LPARAM lParam,ULONG Unknown1,ULONG Unknown2,ULONG Unknown3)
+NtUserMessageCall DDDDDDD win32k.sys
+
+# NtUserPostMessage(HWND hWnd,UINT Msg,WPARAM wParam,LPARAM lParam)
+NtUserPostMessage DDDD win32k.sys
+
+# NtUserPostThreadMessage(DWORD idThread,UINT Msg,WPARAM wParam,LPARAM lParam)
+NtUserPostThreadMessage DDDD win32k.sys
+
+# NtUserRegisterUserApiHook(HINSTANCE hInstance, USERAPIHOOKPROC fnUserApiHook)
+NtUserRegisterUserApiHook DD win32k.sys
+
+# NtUserRegisterRawInputDevices(ULONG Unknown1,ULONG Unknown2,ULONG Unknown3)
+NtUserRegisterRawInputDevices DDD win32k.sys
+
+# NtUserSetClipboardViewer(HWND hWndNewViewer)
+NtUserSetClipboardViewer D win32k.sys
+
+# NtUserSendInput(UINT nInputs,LPINPUT pInput,INT cbSize)
+NtUserSendInput DDD win32k.sys
+
+# NtUserSetParent(HWND hWndChild,HWND hWndParent)
+NtUserSetParent DD win32k.sys
+
+# NtUserSetWindowsHookAW(ULONG Unknown1,ULONG Unknown2,ULONG Unknown3)
+NtUserSetWindowsHookAW DDD win32k.sys
+
+# NtUserSetWindowsHookEx(HINSTANCE hMod,PUNICODE_STRING ModuleName,DWORD dwThreadId,int idHook,HOOKPROC lpfn,UINT dwFlags);
+NtUserSetWindowsHookEx DUDDDD win32k.sys
+
+# NtUserSetWinEventHook(UINT eventMin,UINT eventMax,HMODULE hmodWinEventProc,PUNICODE_STRING Lib,WINEVENTPROC lpfnWinEventProc,
+#                       DWORD idProcess,DWORD idThread,UINT dwFlags)
+NtUserSetWinEventHook DDDUDDDD win32k.sys
+
+# NtUserUnhookWindowsHookEx(HHOOK Hook)
+NtUserUnhookWindowsHookEx D win32k.sys
+
+# NtUserUnhookWinEvent(HWINEVENTHOOK hWinEventHook)
+NtUserUnhookWinEvent D win32k.sys
+
+
