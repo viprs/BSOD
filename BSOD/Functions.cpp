@@ -19,7 +19,7 @@ pZwClose(HANDLE Handle)
 		else
 		{
 			//printf ("pNtCreateFile fail\n");
-			MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
+			//MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
 		}
 	} 
 	else
@@ -96,7 +96,7 @@ pZwCreateFile(
 		else
 		{
 			//printf ("pNtCreateFile fail\n");
-			//MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
+			MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
 		}
 	} 
 	else
@@ -171,7 +171,7 @@ pZwCreateMutant(
 		else
 		{
 			//printf ("pNtCreateFile fail\n");
-			MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
+			//MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
 		}
 	} 
 	else
@@ -206,7 +206,7 @@ pZwCreatePort(
 		else
 		{
 			//printf ("pNtCreateFile fail\n");
-			MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
+			//MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
 		}
 	} 
 	else

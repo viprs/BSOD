@@ -17,9 +17,9 @@ using namespace std;
 #define new DEBUG_NEW
 #endif
 
-CString *m_Function_Name_thread;
-CString *m_Function_Args_thread;
-CString *m_Function_DllName_thread;
+CString *pm_Function_Name;
+CString *pm_Function_Args;
+CString *pm_Function_DllName;
 CListBox *pm_Function_List;
 CProgressCtrl *pm_CtrlProgress;
 vector<DWORD> *pFuzz_Param;
@@ -27,7 +27,7 @@ CString sFunctionDBfile_thread;
 int Fuzz_loops_thread;
 
 
-void ParseDataFromFunctionDB(LPCTSTR lpFileName, LPCTSTR readdata);
+void ParseDataFromFunctionDB(CString lpFileName, CString readdata);
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 /*
@@ -217,10 +217,28 @@ BOOL CBSODDlg::OnInitDialog()
 
 	OnInitLogPath ();
 	//MessageBox (sLogPath);
+	OnInitData ();
+
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
+BOOL CBSODDlg::OnInitData()
+{
+	//初始化Fuzz DB file
+	sFunctionDBfile = GetFilePath ();
+	sFunctionDBfile += _T("functions.db");
 
+	pm_Function_List               = &m_Function_List;
+	pm_CtrlProgress                = &m_CtrlProgress;
+	pFuzz_Param                    = &Fuzz_Param;
+	Fuzz_loops_thread              = Fuzz_loops;
+	sFunctionDBfile_thread         = sFunctionDBfile;
+	pm_Function_Name               = &m_Function_Name;
+	pm_Function_Args               = &m_Function_Args;
+	pm_Function_DllName            = &m_Function_DllName;
+	
+	return TRUE;
+}
 CString CBSODDlg::GetFilePath()
 {
 	TCHAR szTMP[MAX_PATH];
@@ -459,8 +477,7 @@ void CBSODDlg::OnBnClickedAddFunction()
 	//完成!，必须在function.db文件中才能添加进去，并且FuzzList中没有的函数
 	//if (CheckExistInFunctionsDB (FUNCTION_DB_FILE, ))
 	//if (CheckExistInFunctionsDB (_T("functions.db"),_T("NtAdjustPrivilegesToken")))
-	sFunctionDBfile = GetFilePath ();
-	sFunctionDBfile += _T("functions.db");
+
 	if (CheckExistInFunctionsDB (sFunctionDBfile,m_Function_Input))
 	{
 		if (CheckExistInFuzzList(m_Function_Input))
@@ -480,7 +497,52 @@ void CBSODDlg::OnBnClickedAddFunction()
 	// TODO: Add your control notification handler code here
 }
 
+//模块名：ParseDataFromFunctionDB(LPCTSTR lpFileName, LPCTSTR readdata)
+//读取方式: 逐行读取, 将行读入字符数组, 行之间用回车换行区分
+//If we were interested in preserving whitespace, 
+//we could read the file in Line-By-Line using the I/O getline() function.
+//void CBSODDlg::ParseDataFromFunctionDB(LPCTSTR lpFileName, LPCTSTR readdata)
+void ParseDataFromFunctionDB(CString lpFileName, CString readdata)
+{
+	ifstream fin(lpFileName);
+	CString In_readdata(readdata);
+	const int LINE_LENGTH = 200;
+	char str[LINE_LENGTH];
 
+	while( fin.getline(str, LINE_LENGTH) )
+	{
+		if ('#' == str[0] || '\0' == str[0] || ' ' == str[0])
+		{
+			continue;
+		} 
+		else
+		{
+			//get the three parts of the string
+			CString Function_Temp(str);
+			//从字符串中取得函数名
+			//在Function_Temp中从NtAdjustPrivilegesToken DDDDDD ntdll.dll中取得NtAdjustPrivilegesToken，并删除
+			int b = Function_Temp.Find (' ');
+
+			if (In_readdata == Function_Temp.Left (b))
+			{
+				//b = Function_Temp.Find (' ');
+				*pm_Function_Name = Function_Temp.Left (b);
+				Function_Temp.Delete (0, b+1);
+
+				//在Function_Temp中从DDDDDD ntdll.dll中取得DDDDDD，并删除
+				b = Function_Temp.Find (' ');
+				*pm_Function_Args = Function_Temp.Left (b);
+				Function_Temp.Delete (0, b+1);
+
+				//把在Function_Temp中的ntdll.dll赋值给Function_DllName
+				*pm_Function_DllName = Function_Temp;
+				//	UpdateData (FALSE);
+				break;
+			}
+
+		}
+	}
+}
 /**************************************************************
 * 模块名：OnLbnSelchangeListToTest()
 * 功能：当点击Fuzz_List中的一个函数，则查询functions.db中，把
@@ -501,7 +563,7 @@ void CBSODDlg::OnLbnSelchangeListToTest()
 	//ParseDataFromFunctionDB(_T("functions.db"),temp);
 	ParseDataFromFunctionDB(sFunctionDBfile,temp);
 
-
+	UpdateData (FALSE);
 	//选中ListBox列表中，当前选择的下一条目
 	//int nCount = m_Function_List.GetCount();
 	//if ((nIndex != LB_ERR) && (nCount > 1))
@@ -516,52 +578,7 @@ void CBSODDlg::OnLbnSelchangeListToTest()
 }
 
 
-//模块名：ParseDataFromFunctionDB(LPCTSTR lpFileName, LPCTSTR readdata)
-//读取方式: 逐行读取, 将行读入字符数组, 行之间用回车换行区分
-//If we were interested in preserving whitespace, 
-//we could read the file in Line-By-Line using the I/O getline() function.
-//void CBSODDlg::ParseDataFromFunctionDB(LPCTSTR lpFileName, LPCTSTR readdata)
-void ParseDataFromFunctionDB(LPCTSTR lpFileName, LPCTSTR readdata)
-{
-	ifstream fin(lpFileName);
-	CString In_readdata(readdata);
-	const int LINE_LENGTH = 200;
-	char str[LINE_LENGTH];
 
-	while( fin.getline(str, LINE_LENGTH) )
-	{
-		if ('#' == str[0] || '\0' == str[0] || ' ' == str[0])
-		{
-			continue;
-		} 
-		else
-		{
-			//get the three parts of the string
-			CString Function_Temp(str);
-			//从字符串中取得函数名
-			//在Function_Temp中从NtAdjustPrivilegesToken DDDDDD ntdll.dll中取得NtAdjustPrivilegesToken，并删除
-			int b = Function_Temp.Find (' ');
-			
-			if (In_readdata == Function_Temp.Left (b))
-			{
-				//b = Function_Temp.Find (' ');
-				*m_Function_Name_thread = Function_Temp.Left (b);
-				Function_Temp.Delete (0, b+1);
-
-				//在Function_Temp中从DDDDDD ntdll.dll中取得DDDDDD，并删除
-				b = Function_Temp.Find (' ');
-				*m_Function_Args_thread = Function_Temp.Left (b);
-				Function_Temp.Delete (0, b+1);
-
-				//把在Function_Temp中的ntdll.dll赋值给Function_DllName
-				*m_Function_DllName_thread = Function_Temp;
-			//	UpdateData (FALSE);
-				break;
-			}
-
-		}
-	}
-}
 
 //一下是一些辅助函数
 
@@ -622,12 +639,13 @@ void MainFuzz()
 		UNICODE_STRING uniName = {0};
 		RtlInitUnicodeString_U (&uniName, TEST_FILE);
 		InitializeObjectAttributes(&oa, (PUNICODE_STRING)GetAnyDword (), OBJ_CASE_INSENSITIVE, 0, 0);
-
+		
+		
 		ParseDataFromFunctionDB(sFunctionDBfile_thread, vFuzzList.at (i));
 
 		for (int loop=0; loop < Fuzz_loops_thread; loop++)//设置Fuzz次数
 		{
-			CString Temp(*m_Function_Args_thread);
+			CString Temp(*pm_Function_Args);
 			while(Temp != _T(""))
 			{
 				if (_T("v") == Temp.Left (1) || _T("V") == Temp.Left (1))
@@ -757,17 +775,10 @@ void MainFuzz()
 void CBSODDlg::OnBnClickedFuzz()
 {
 	UpdateData (TRUE);
-	pm_Function_List=&m_Function_List;
-	pm_CtrlProgress = &m_CtrlProgress;
-	pFuzz_Param = &Fuzz_Param;
-	Fuzz_loops_thread = Fuzz_loops;
-	sFunctionDBfile_thread = sFunctionDBfile;
-	m_Function_Name_thread=&m_Function_Name;
-	m_Function_Args_thread=&m_Function_Args;
-	m_Function_DllName_thread=&m_Function_DllName;
+	OnInitData ();
 
 	CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)MainFuzz,NULL,0,NULL);
-
+	Msg("Fuzz 测试结束！");
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//功能：获得Clist框中的“函数数目”，并将每一个函数名放到Vector中
@@ -1120,8 +1131,8 @@ void CBSODDlg::ParseXmlData(CString m_Xml_Path)
 	::CoUninitialize ();
 */
 
-	//m_Xml_Path = _T("c:\\functions.xml");
-	m_Xml_Path = _T("c:\\people.xml");
+	m_Xml_Path = _T("c:\\functions.xml");
+	//m_Xml_Path = _T("c:\\people.xml");
 	BSTR    name, content;
 	MSXML2::DOMNodeType type;
 	MSXML2::IXMLDOMDocumentPtr pdoc;
@@ -1142,8 +1153,8 @@ void CBSODDlg::ParseXmlData(CString m_Xml_Path)
 	}
 	//hr = pdoc->load("d:\\he.xml");
 	//hr = pdoc->load(_T("c:\\people.xml"));
-	hr = pdoc->load(_T("c:\\functions.xml"));
-	//hr = pdoc->load( (_bstr_t)m_Xml_Path );
+	//hr = pdoc->load(_T("c:\\functions.xml"));
+	hr = pdoc->load( (_bstr_t)m_Xml_Path );
 	//if(!SUCCEEDED(hr)) 
 	//{
 	//	MessageBox(_T("加载XML  Error!")); 
@@ -1156,7 +1167,7 @@ void CBSODDlg::ParseXmlData(CString m_Xml_Path)
 		//cout << "Load XML Error!\n" << endl;
 		//MessageBox(_T("加载XML  Error!"));
 	}
-	MessageBox(_T("success!"));
+	//MessageBox(_T("success!"));
 
 	//----------------------------------获取根节点------------------------------------
 	hr = pdoc->get_documentElement (&proot);
@@ -1229,6 +1240,11 @@ void CBSODDlg::ParseXmlData(CString m_Xml_Path)
 					pAttrItem->get_text (&content);
 					strContent = content;
 					funcAttriMap->insert (make_pair (strName, strContent));
+					if (_T("Zw") == strContent.Left (2))
+					{
+						Fuzz_FunName = _T("Nt") + strContent.Mid (2);
+//						Fuzz_FunName = strContent;
+					}
 //					func[strName] = strContent;
 					//Array_value[0][strName] = strContent;
 					pAttrItem = NULL;
@@ -1336,7 +1352,7 @@ void CBSODDlg::FuzzXmlData()
 	*******************************************************************************/
 
 
-
+	
 	POBJECT_ATTRIBUTES poa;
 	PIO_STATUS_BLOCK pio;
 	PUNICODE_STRING pus;
@@ -1362,6 +1378,7 @@ void CBSODDlg::FuzzXmlData()
 				if (itTemp != fuzzFuncMapit->second->end() && itTemp->second == _T("POBJECT_ATTRIBUTES"))
 				{
 					//why ?
+					
 					poa = new OBJECT_ATTRIBUTES;
 					pus = new UNICODE_STRING;
 					pus->Buffer = (PWSTR)GetAnyDword ();
@@ -1396,33 +1413,35 @@ void CBSODDlg::FuzzXmlData()
 
 	}
 
-	delete poa;
-	delete pio;
-	delete pus;
+
 
 	DWORD dTemp = 0;
 	int ESP_Size = 0;
 
-	//for (int i=0;i<Fuzz_loops;i++)
-	//{
-	//	for (int k=Fuzz_Param.size ()-1;k>=0;k--)
-	//	{
-	//		dTemp = Fuzz_Param.at (k);
-	//		ESP_Size += sizeof(dTemp);
-	//		__asm{
-	//			mov edx,dTemp;
-	//			push edx;
-	//		}
-	//	}
-	//	if (_T("NtCreateFile") == vFuzzList.at (i))
-	//	{
-	//		__asm{
-	//			call pZwCreateFile;
-	//			mov  eax ,ESP_Size;
-	//			add esp,eax;
-	//		}
-	//	}
-	//}
+	for (int i=0;i<Fuzz_loops;i++)
+	{
+		for (int k=Fuzz_Param.size ()-1;k>=0;k--)
+		{
+			dTemp = Fuzz_Param.at (k);
+			ESP_Size += sizeof(dTemp);
+			__asm{
+				mov edx,dTemp;
+				push edx;
+			}
+		}
+		if (_T("NtCreateFile") == Fuzz_FunName)
+		{
+			__asm{
+				call pZwCreateFile;
+				mov  eax ,ESP_Size;
+				add esp,eax;
+			}
+		}
+	}
+
+	delete poa;
+	delete pio;
+	delete pus;
 
 }
 

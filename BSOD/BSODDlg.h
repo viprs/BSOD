@@ -15,6 +15,7 @@ using namespace std;
 #define chDIMOF(Array) (sizeof(Array) / sizeof(Array[0]))
 #define FUNCTION_DB_FILE _T("functions.db")
 #define BUFF_LEN 50
+#define Msg(x) MessageBox (_T(x));
 
 typedef map< CString, CString > Attr_value;
 typedef map<CString, CString>  AttrMap;
@@ -45,6 +46,7 @@ protected:
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
+	BOOL OnInitData();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
@@ -60,6 +62,7 @@ public:
 	//void MainFuzz();
 public:
 	int m_ListIndex;
+	CString Fuzz_FunName;
 	vector<DWORD> Fuzz_Param;
 	map<int, PAttrMap> fuzzFuncMap;
 private:
