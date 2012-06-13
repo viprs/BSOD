@@ -26,6 +26,7 @@ vector<DWORD> *pFuzz_Param;
 CString sFunctionDBfile_thread;
 int Fuzz_loops_thread;
 //CString Fuzz_loops_thread;
+int g_Fuzz_seed;
 
 
 void ParseDataFromFunctionDB(CString lpFileName, CString readdata);
@@ -49,7 +50,8 @@ GetAnyDword()
 {
 	//D   - the argument is probed in range 0x00000000 - 0xFFFFFFFF  0~4294967295
 	DWORD dTemp;
-	srand((int)time(0));
+	//srand((int)time(0));
+	srand(g_Fuzz_seed);
 
 	dTemp = (rand () * rand ()) % 0xFFFFFFFF;
 	return dTemp;
@@ -61,7 +63,8 @@ GetAnyPArg()
 {
 	//P   - the argument is probed in range 0x00000001 - 0xFFFFFF00  1~4294967040
 	DWORD dTemp;
-	srand((int)time(0));
+	//srand((int)time(0));
+	srand(g_Fuzz_seed);
 
 	dTemp = (rand () * rand ()) % 0xFFFFFF00;
 	return dTemp;
@@ -73,7 +76,8 @@ GetAnyBArg()
 {
 	//B   - the argument is probed in range 0x7FFF0001 - 0xFFFFFFFF  2147418113~4294967295
 	DWORD dTemp;
-	srand((int)time(0));
+	//srand((int)time(0));
+	srand(g_Fuzz_seed);
 
 	dTemp = (rand () + 2147418113) % 0xFFFFFFFF;
 	return dTemp;
@@ -224,7 +228,7 @@ BOOL CBSODDlg::OnInitDialog()
 	//MessageBox (sLogPath);
 	OnInitData ();//初始化 函数所在文件functions.db 以及方便 MainFuzz ()创建线程
 
-
+	g_Fuzz_seed = Fuzz_seed;
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
 BOOL CBSODDlg::OnInitData()
@@ -292,6 +296,36 @@ void CBSODDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 }
 
+//写log函数，供普通函数调用.
+// int WriteLog(LPCTSTR lpFileName, LPCTSTR writedata)
+//int WriteLog(LPCTSTR lpFileName, LPCTSTR writedata)
+//{
+//	CString Temp;
+//	HANDLE hFile;
+//	DWORD  dwBytesWritten;
+//
+//	hFile = CreateFile(lpFileName,             // file name
+//		FILE_APPEND_DATA,               // append data to a file
+//		0,                              // do not share
+//		NULL,                           // default security
+//		OPEN_ALWAYS,                    // existing file only
+//		FILE_ATTRIBUTE_NORMAL,          // normal file
+//		NULL);                          // no template
+//	if (INVALID_HANDLE_VALUE != hFile)
+//	{
+//		WORD Head=0xfeff;
+//		WriteFile (hFile, &Head, sizeof(WORD), &dwBytesWritten, NULL);
+//		Temp.Format (L"%s\r\n", writedata);
+//		WriteFile (hFile, Temp, lstrlen(Temp) * sizeof(TCHAR), &dwBytesWritten, NULL);
+//		CloseHandle (hFile);
+//	}
+//	else
+//	{
+//		AfxMessageBox(_T("Could Not create file!!"));
+//	}
+//
+//	return TRUE;
+//}
 //写log函数
 //int CBSODDlg::WriteLog(LPCTSTR lpFileName, LPCTSTR writedata)
 int CBSODDlg::WriteLog(LPCTSTR lpFileName, LPCTSTR writedata)
@@ -764,6 +798,14 @@ void MainFuzz()
 			{
 				__asm{
 					call pZwCreatePort;
+					mov  eax ,ESP_Size;
+					add esp,eax;
+				}
+			}
+			if (_T("NtDeleteValueKey") == vFuzzList.at (i))
+			{
+				__asm{
+					call pZwDeleteValueKey;
 					mov  eax ,ESP_Size;
 					add esp,eax;
 				}
