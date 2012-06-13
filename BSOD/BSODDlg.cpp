@@ -47,7 +47,6 @@ void ParseDataFromFunctionDB(CString lpFileName, CString readdata);
 DWORD
 GetAnyDword()
 {
-	//D   - the argument is probed in range 0x00000000 - 0xFFFFFFFF
 	DWORD dTemp;
 	srand((int)time(0));
 
@@ -59,7 +58,6 @@ GetAnyDword()
 DWORD
 GetAnyPArg()
 {
-	//P   - the argument is probed in range 0x00000001 - 0xFFFFFF00
 	DWORD dTemp;
 	srand((int)time(0));
 
@@ -71,7 +69,6 @@ GetAnyPArg()
 DWORD
 GetAnyBArg()
 {
-	//B   - the argument is probed in range 0x7FFF0001 - 0xFFFFFFFF
 	DWORD dTemp;
 	srand((int)time(0));
 
@@ -223,7 +220,7 @@ BOOL CBSODDlg::OnInitDialog()
 	OnInitLogPath ();
 	//MessageBox (sLogPath);
 	OnInitData ();//初始化 函数所在文件functions.db 以及方便 MainFuzz ()创建线程
-	//m_RichEdit.SetFocus();
+
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -787,7 +784,7 @@ void CBSODDlg::OnBnClickedFuzz()
 	OnInitData ();
 	CString sTemp;
 	sTemp.Format (_T("%d"), Fuzz_loops);
-	//MessageBox (sTemp);
+	MessageBox (sTemp);
 	CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)MainFuzz,NULL,0,NULL);
 	//Msg("Fuzz 测试结束！");
 
@@ -1101,7 +1098,6 @@ void CBSODDlg::OnNMShowClickListXml()
 void CBSODDlg::OnBnClickedBtnXmlSave()
 {
 	// TODO: Add your control notification handler code here
-	UpdateData (TRUE);//m_RichEdit 赋值为xml内容
 	CString Xml_Path;
 	Xml_Path = m_List_Xml.GetItemText (m_ListIndex, 1);
 
@@ -1117,7 +1113,7 @@ void CBSODDlg::OnBnClickedBtnXmlSave()
 	{
 		MessageBox (_T("请先添加要编辑的XML！"), _T("友情提示"), MB_OK);
 	}
-	
+	//UpdateData (TRUE);
 }
 
 void CBSODDlg::OnBnClickedBtnXmlSaveAs()
@@ -1129,7 +1125,7 @@ void CBSODDlg::OnBnClickedBtnXmlSaveAs()
 	//	szFilter,NULL);
 	CString XmlSaveAs;
 	XmlSaveAs = BootSaveAsDialog ();
-	UpdateData (TRUE);
+	//UpdateData (FALSE);
 
 	CStdioFile xmlFile;
 
@@ -1268,7 +1264,6 @@ void CBSODDlg::ParseXmlData(CString m_Xml_Path)
 	if (S_OK != hr)
 	{
 		MessageBox (_T("获取根节点有误！请检查XML的格式是否正确！"));
-		return ;
 	}
 	//----------------------------------测试根节点------------------------------------
 	CString str;
@@ -1448,9 +1443,9 @@ void CBSODDlg::FuzzXmlData()
 
 
 	
-	POBJECT_ATTRIBUTES poa = NULL;
-	PIO_STATUS_BLOCK pio = NULL;
-	PUNICODE_STRING pus = NULL;
+	POBJECT_ATTRIBUTES poa;
+	PIO_STATUS_BLOCK pio;
+	PUNICODE_STRING pus;
 
 	map<int, PAttrMap >::iterator fuzzFuncMapit = fuzzFuncMap.begin();
 
@@ -1465,27 +1460,21 @@ void CBSODDlg::FuzzXmlData()
 				map<CString,CString>::iterator itTemp = fuzzFuncMapit->second->find (_T("name"));
 
 				//根据PHANDLE、PLARGE_INTEGER类型不同，压入不同的数值
-				if ( (itTemp != fuzzFuncMapit->second->end() && itTemp->second == _T("PHANDLE")) || (itTemp != fuzzFuncMapit->second->end() && itTemp->second == _T("HANDLE")) )
+				if (itTemp != fuzzFuncMapit->second->end() && itTemp->second == _T("PHANDLE"))
 				{
 					Fuzz_Param.push_back (GetAnyDword ());
 					continue;
 				}
 				if (itTemp != fuzzFuncMapit->second->end() && itTemp->second == _T("POBJECT_ATTRIBUTES"))
 				{
-					//update:2012-06-13
-					//原来的强制类型转换是不对的，
+					//why ?
+					
 					poa = new OBJECT_ATTRIBUTES;
 					pus = new UNICODE_STRING;
-					WCHAR *wc = new WCHAR[MAX_PATH];
-					swprintf_s(wc,MAX_PATH,_T("%d"), GetAnyDword ());
-					pus->Buffer = wc;
+					pus->Buffer = (PWSTR)GetAnyDword ();
 					poa->ObjectName = pus;
 					Fuzz_Param.push_back ((DWORD)poa);
 
-					if (wc != NULL)
-					{
-						delete wc;
-					}
 					continue;
 				}
 				if (itTemp != fuzzFuncMapit->second->end() && itTemp->second == _T("PIO_STATUS_BLOCK"))
@@ -1494,20 +1483,6 @@ void CBSODDlg::FuzzXmlData()
 					pio->Pointer = (PVOID)GetAnyDword ();
 					Fuzz_Param.push_back ((DWORD)pio);
 
-					continue;
-				}
-				if (itTemp != fuzzFuncMapit->second->end() && itTemp->second == _T("PUNICODE_STRING"))
-				{
-					pus = new UNICODE_STRING;
-					WCHAR *wc = new WCHAR[MAX_PATH];
-					swprintf_s(wc,MAX_PATH,_T("%d"), GetAnyDword ());
-					pus->Buffer = wc;
-					Fuzz_Param.push_back ((DWORD)pus);
-
-					if (wc != NULL)
-					{
-						delete wc;
-					}
 					continue;
 				}
 				if (itTemp != fuzzFuncMapit->second->end() && itTemp->second == _T("PLARGE_INTEGER"))
@@ -1551,84 +1526,18 @@ void CBSODDlg::FuzzXmlData()
 			add esp,eax;
 		}
 	}
-	if (_T("NtAdjustPrivilegesToken") == Fuzz_FunName)
-	{
-		__asm{
-			call pZwCreateFile;
-			mov  eax ,ESP_Size;
-			add esp,eax;
-		}
-	}
-	if (_T("NtAlertThread") == Fuzz_FunName)
-	{
-		__asm{
-			call pZwCreateFile;
-			mov  eax ,ESP_Size;
-			add esp,eax;
-		}
-	}
-	if (_T("NtCreateProcess") == Fuzz_FunName)
-	{
-		__asm{
-			call pZwCreateProcess;
-			mov  eax ,ESP_Size;
-			add esp,eax;
-		}
-	}
-	if (_T("NtClose") == Fuzz_FunName)
-	{
-		__asm{
-			call pZwClose;
-			mov  eax ,ESP_Size;
-			add esp,eax;
-		}
-	}
-	if (_T("NtCreateMutant") == Fuzz_FunName)
-	{
-		__asm{
-			call pZwCreateMutant;
-			mov  eax ,ESP_Size;
-			add esp,eax;
-		}
-	}
-	if (_T("NtCreatePort") == Fuzz_FunName)
-	{
-		__asm{
-			call pZwCreatePort;
-			mov  eax ,ESP_Size;
-			add esp,eax;
-		}
-	}
-	if (_T("NtDeleteValueKey") == Fuzz_FunName)
-	{
-		__asm{
-			call pZwDeleteValueKey;
-			mov  eax ,ESP_Size;
-			add esp,eax;
-		}
-	}
 
-	if (poa != NULL)
-	{
-		delete poa;
-	}
-	if (pio != NULL)
-	{
-		delete pio;
-	}
-	if (pus != NULL)
-	{
-		delete pus;
-	}
 
-	Fuzz_Param.clear ();//清除Fuzz_Param的内容
+	delete poa;
+	delete pio;
+	delete pus;
+
 }
 
 void CBSODDlg::OnBnClickedBtnXmlFuzz()
 {
 	// TODO: Add your control notification handler code here
 	UpdateData (TRUE);
-	//m_RichEdit(WM_CHAR，0x0A)// 回车
 	int dXmlCount = m_List_Xml.GetItemCount ();
 	if ( m_List_Xml.GetItemCount () )
 	{
@@ -1641,7 +1550,7 @@ void CBSODDlg::OnBnClickedBtnXmlFuzz()
 				FuzzXmlData ();
 			}//Fuzz次数结束
 		}//结束 遍历每个XML文件
-		MessageBox (_T("FUZZ 所有XML结束！"), _T("友情提示"), MB_OK);
+		MessageBox (_T("FUZZ XML结束！所有函数通过了测试！"), _T("友情提示"), MB_OK);
 	}
 	else
 	{

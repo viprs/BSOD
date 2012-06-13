@@ -216,31 +216,3 @@ pZwCreatePort(
 
 	return TRUE;
 }
-LONG pZwDeleteValueKey(
-					   IN HANDLE  KeyHandle,
-					   IN PUNICODE_STRING  ValueName
-					   )
-{
-	DefZwDeleteValueKey pZwDeleteValueKey = (DefZwDeleteValueKey) GetProcAddress (GetModuleHandle(_T("ntdll.dll")), "NtDeleteValueKey");
-	if (pZwClose != NULL)
-	{
-		LONG lRet = pZwDeleteValueKey(
-					KeyHandle,
-					ValueName);
-		if (lRet >= 0)
-		{
-			AfxMessageBox (_T("pZwDeleteValueKey success\n"));
-		}
-		else
-		{
-			//printf ("pNtCreateFile fail\n");
-			//MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
-		}
-	} 
-	else
-	{
-		AfxMessageBox (_T("pZwDeleteValueKey GetProcAddress ntdll fail\n"));
-	}
-
-	return TRUE;
-}
