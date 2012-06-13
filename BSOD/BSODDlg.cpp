@@ -694,8 +694,9 @@ void MainFuzz()
 				if (_T("v") == Temp.Left (1) || _T("V") == Temp.Left (1))
 				{
 					pFuzz_Param->push_back (0);
-					Temp.Delete (0, 1);
+					Temp.Delete (0, 1); 
 					continue;
+					//
 				}
 				if (_T("d") == Temp.Left (1) || _T("D") == Temp.Left (1))
 				{
