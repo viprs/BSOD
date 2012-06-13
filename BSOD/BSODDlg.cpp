@@ -1273,6 +1273,7 @@ void CBSODDlg::ParseXmlData(CString m_Xml_Path)
 	if (S_OK != hr)
 	{
 		MessageBox (_T("获取根节点有误！请检查XML的格式是否正确！"));
+		return;
 	}
 	//----------------------------------测试根节点------------------------------------
 	CString str;
@@ -1500,6 +1501,16 @@ void CBSODDlg::FuzzXmlData()
 					Fuzz_Param.push_back (GetAnyDword ());
 					continue;
 				}
+				if (itTemp != fuzzFuncMapit->second->end() && itTemp->second == _T("PUNICODE_STRING"))
+				{
+					pus = new UNICODE_STRING;
+					WCHAR *wc = new WCHAR [MAX_PATH];
+					swprintf_s (wc, MAX_PATH ,_T( "%d" ), GetAnyDword ());
+					pus->Buffer = wc;
+					delete wc;
+					Fuzz_Param.push_back ((DWORD)pus);
+					continue;
+				}
 			}
 			else
 			{ 
@@ -1607,6 +1618,7 @@ void CBSODDlg::FuzzXmlData()
 	}
 
 	Fuzz_Param.clear();//清除所有随机参数，为下一次fuzz做准备
+	fuzzFuncMap.clear ();
 }
 
 void CBSODDlg::OnBnClickedBtnXmlFuzz()
@@ -1636,9 +1648,17 @@ void CBSODDlg::OnBnClickedBtnXmlFuzz()
 void CBSODDlg::OnBnClickedBtnDelLog()
 {
 	// TODO: Add your control notification handler code here
-	DeleteFile(m_Log_Path);
-	m_Log_Content = _T("");
-	UpdateData (FALSE);
+	LONG lRet = 0;
+	if (DeleteFile(m_Log_Path))
+	{
+		MessageBox (_T("删除日志文件成功！"), _T("友情提示"), MB_OK);
+		m_Log_Content = _T("");
+		UpdateData (FALSE);
+	}
+	else
+	{
+		MessageBox (_T("该日志文件不存在！"), _T("友情提示"), MB_OK);
+	}
 }
 
 void CBSODDlg::OnEnChangeEditFuzzerLoops()
