@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FUNCTIONS>
+	<FUNC name="ZwCreateFile" fuzz="true">
+		<PARAM name="PHANDLE" size="4" order="1" fuzz="true" direct="out" />
+		<PARAM name="ACCESS_MASK" size="4" order="2" content="511" />
+		<PARAM name="POBJECT_ATTRIBUTES" size="4" fuzz="true" type="PVOID" order="3" />
+		<PARAM name="PIO_STATUS_BLOCK" size="4" fuzz="true" order="4" direct="out" />
+		<PARAM name="PLARGE_INTEGER" size="4" order="5" content="0" />
+		<PARAM name="ULONG" size="4" order="6" content="128" />
+		<PARAM name="ULONG" size="4" order="7" content="1" />
+		<PARAM name="ULONG" size="4" order="8" content="3" />
+		<PARAM name="ULONG" size="4" order="9" content="64" />
+		<PARAM name="PVOID" size="4" order="10" content="0" />
+		<PARAM name="ULONG" size="4" order="11" content="0" />
+	</FUNC>
+</FUNCTIONS>

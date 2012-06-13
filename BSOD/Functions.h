@@ -98,3 +98,13 @@ LONG pZwCreatePort(
 					ULONG MaxDataSize,
 					ULONG MaxMessageSize,
 					ULONG Reserved);
+typedef
+LONG 
+(WINAPI *DefZwDeleteValueKey)(
+				 IN HANDLE  KeyHandle,
+				 IN PUNICODE_STRING  ValueName
+				 );
+LONG pZwDeleteValueKey(
+					   IN HANDLE  KeyHandle,
+					   IN PUNICODE_STRING  ValueName
+					   );

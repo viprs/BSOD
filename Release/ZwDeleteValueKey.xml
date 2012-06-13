@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FUNCTIONS>	
+	<FUNC name="ZwDeleteValueKey" fuzz="true">		
+		<PARAM name="PHANDLE" size="4" order="1" fuzz="true" direct="in" />		
+		<PARAM name="PUNICODE_STRING" size="4" order="2" fuzz="true" />	
+	</FUNC>
+</FUNCTIONS>

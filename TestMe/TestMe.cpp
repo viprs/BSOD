@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 #include <WinCrypt.h>
-
+#include <winternl.h>
 
 using namespace std;
 
@@ -67,6 +67,10 @@ void
 main()
 {
 
+
+	
+
+	printf ("%d\n",(DWORD)0x123);
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//DWORD dwLen = 4,test;
 	//BYTE* pbBuffer =(BYTE*) malloc (4*sizeof(BYTE));
