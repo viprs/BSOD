@@ -1,0 +1,26 @@
+支持的数据类型
+Type是现在程序可以支持的数据类型；别的数据类型还不支持，相关类型转换见下
+xml中的Type，请写左侧的类型
+
+1）非kv
+ “Type”       		“实际的数据类型”    
+ "Uint64"<---------------	(Uint64,int64)
+ "Uint"<--------------- 	(Uint32,Uint)
+ "Uint8"<--------------- 	(Uint8,int8)
+ "Ushort"<---------------	(Ushort,Uint18)
+ "Uchar"<---------------	(Uchar,Uint8)
+ "Uchar[*]"<---------------	(Uchar[*])*是大小
+ "String"<---------------	(String)这个在程序中留了接口，没有写，因为在非kv中没有纯粹的String，都可以转换成"Uchar[*]"
+ "Md5"<---------------		(String的Md5数据)这个例子，见“Xml编写说明.doc”
+Type的类型直接关系组包的过程，如果有问题，请看代码BaseProtocol.cpp中461行的组包逻辑
+2）kv
+ “Type”       		“实际的数据类型”    
+ "Uint64"<---------------	(Uint64,int64)
+ "Uint"<--------------- 	(Uint32,Uint)
+ "Ushort"<---------------	(Ushort,Uint18)
+ "Uchar"<---------------	(Uchar,Uint8)
+ "Uchar[*]"<---------------	(Uchar[*]) *是大小
+ "Buffer"<---------------	(char*,uchar*)
+ "String"<---------------	(String)
+ "ResultSet"<---------------	(ResultSet)
+如果有问题，请看代码Kvxml.cpp中157行的组包逻辑

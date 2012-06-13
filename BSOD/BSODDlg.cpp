@@ -47,6 +47,7 @@ void ParseDataFromFunctionDB(CString lpFileName, CString readdata);
 DWORD
 GetAnyDword()
 {
+	//D   - the argument is probed in range 0x00000000 - 0xFFFFFFFF  0~4294967295
 	DWORD dTemp;
 	srand((int)time(0));
 
@@ -58,6 +59,7 @@ GetAnyDword()
 DWORD
 GetAnyPArg()
 {
+	//P   - the argument is probed in range 0x00000001 - 0xFFFFFF00  1~4294967040
 	DWORD dTemp;
 	srand((int)time(0));
 
@@ -69,6 +71,7 @@ GetAnyPArg()
 DWORD
 GetAnyBArg()
 {
+	//B   - the argument is probed in range 0x7FFF0001 - 0xFFFFFFFF  2147418113~4294967295
 	DWORD dTemp;
 	srand((int)time(0));
 
@@ -784,7 +787,7 @@ void CBSODDlg::OnBnClickedFuzz()
 	OnInitData ();
 	CString sTemp;
 	sTemp.Format (_T("%d"), Fuzz_loops);
-	MessageBox (sTemp);
+	//MessageBox (sTemp);
 	CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)MainFuzz,NULL,0,NULL);
 	//Msg("Fuzz 测试结束！");
 
@@ -1098,6 +1101,7 @@ void CBSODDlg::OnNMShowClickListXml()
 void CBSODDlg::OnBnClickedBtnXmlSave()
 {
 	// TODO: Add your control notification handler code here
+	UpdateData (TRUE);//把XML Manager里的数据保存起来
 	CString Xml_Path;
 	Xml_Path = m_List_Xml.GetItemText (m_ListIndex, 1);
 
@@ -1113,7 +1117,6 @@ void CBSODDlg::OnBnClickedBtnXmlSave()
 	{
 		MessageBox (_T("请先添加要编辑的XML！"), _T("友情提示"), MB_OK);
 	}
-	//UpdateData (TRUE);
 }
 
 void CBSODDlg::OnBnClickedBtnXmlSaveAs()
@@ -1123,6 +1126,13 @@ void CBSODDlg::OnBnClickedBtnXmlSaveAs()
 
 	//CFileDialog FileDlg(false,_T("txt"),NULL,OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_NOCHANGEDIR,
 	//	szFilter,NULL);
+	UpdateData (TRUE);//把XML Manager里的数据 另存为...
+	
+	if(m_RichEdit == _T(""))//程序健壮性
+	{
+		MessageBox (_T("XML Manager内容为空！"), _T("友情提示"), MB_OK);
+		return;
+	}
 	CString XmlSaveAs;
 	XmlSaveAs = BootSaveAsDialog ();
 	//UpdateData (FALSE);
@@ -1142,7 +1152,6 @@ void CBSODDlg::OnBnClickedBtnXmlSaveAs()
 	//AddXmlToList(m_Xml_Path);
 	//WriteLog(m_Log_Path, m_Xml_Path + _T(" added."));
 	//m_Xml_Path = _T("");
-	//UpdateData (FALSE);
 }
 
 void CBSODDlg::OnBnClickedBtnXmlDel()
@@ -1443,9 +1452,9 @@ void CBSODDlg::FuzzXmlData()
 
 
 	
-	POBJECT_ATTRIBUTES poa;
-	PIO_STATUS_BLOCK pio;
-	PUNICODE_STRING pus;
+	POBJECT_ATTRIBUTES poa = NULL;
+	PIO_STATUS_BLOCK pio = NULL;
+	PUNICODE_STRING pus = NULL;
 
 	map<int, PAttrMap >::iterator fuzzFuncMapit = fuzzFuncMap.begin();
 
@@ -1467,12 +1476,13 @@ void CBSODDlg::FuzzXmlData()
 				}
 				if (itTemp != fuzzFuncMapit->second->end() && itTemp->second == _T("POBJECT_ATTRIBUTES"))
 				{
-					//why ?
-					
 					poa = new OBJECT_ATTRIBUTES;
 					pus = new UNICODE_STRING;
-					pus->Buffer = (PWSTR)GetAnyDword ();
+					WCHAR *wc = new WCHAR [MAX_PATH];
+					swprintf_s (wc, MAX_PATH ,_T( "%d" ), GetAnyDword ());
+					pus->Buffer = wc;
 					poa->ObjectName = pus;
+					delete wc;
 					Fuzz_Param.push_back ((DWORD)poa);
 
 					continue;
@@ -1526,12 +1536,77 @@ void CBSODDlg::FuzzXmlData()
 			add esp,eax;
 		}
 	}
+	if (_T("NtAdjustPrivilegesToken") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwCreateFile;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
+	if (_T("NtAlertThread") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwCreateFile;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
+	if (_T("NtCreateProcess") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwCreateProcess;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
+	if (_T("NtClose") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwClose;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
+	if (_T("NtCreateMutant") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwCreateMutant;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
+	if (_T("NtCreatePort") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwCreatePort;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
+	if (_T("NtDeleteValueKey") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwDeleteValueKey;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
 
+	if( poa != NULL)
+	{
+		delete poa;
+	}
+	if( poa != NULL)
+	{
+		delete pio;
+	}
+	if( poa != NULL)
+	{
+		delete pus;
+	}
 
-	delete poa;
-	delete pio;
-	delete pus;
-
+	Fuzz_Param.clear();//清除所有随机参数，为下一次fuzz做准备
 }
 
 void CBSODDlg::OnBnClickedBtnXmlFuzz()
@@ -1550,7 +1625,7 @@ void CBSODDlg::OnBnClickedBtnXmlFuzz()
 				FuzzXmlData ();
 			}//Fuzz次数结束
 		}//结束 遍历每个XML文件
-		MessageBox (_T("FUZZ XML结束！所有函数通过了测试！"), _T("友情提示"), MB_OK);
+		MessageBox (_T("FUZZ 列表中的XML结束！"), _T("友情提示"), MB_OK);
 	}
 	else
 	{
