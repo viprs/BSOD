@@ -79,6 +79,8 @@ private:
 	CString m_Function_DllName;
 private:
 	int Fuzz_loops;
+	//CString Fuzz_loops;
+	//CString Fuzz_seed;
 	int Fuzz_seed;
 	CString sFunctionDBfile;
 private:
@@ -89,6 +91,7 @@ private:
 	CListCtrl m_List_Xml;//xml的ListControl控件关联变量
 public:
 	afx_msg CString BootOpenDialog();
+	afx_msg CString BootSaveAsDialog();
 	afx_msg void OnBnClickedBtnBrowse();
 	afx_msg void AddXmlToList(CString m_Xml_Path);
 private:
@@ -112,6 +115,8 @@ public:
 	afx_msg void OnBnClickedBtnDelLog();
 private:
 	CString m_Log_Content;
+public:
+	afx_msg void OnEnChangeEditFuzzerLoops();
 };
 
 

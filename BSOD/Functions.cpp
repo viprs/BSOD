@@ -96,7 +96,7 @@ pZwCreateFile(
 		else
 		{
 			//printf ("pNtCreateFile fail\n");
-			MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
+			//MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
 		}
 	} 
 	else

@@ -25,6 +25,7 @@ CProgressCtrl *pm_CtrlProgress;
 vector<DWORD> *pFuzz_Param;
 CString sFunctionDBfile_thread;
 int Fuzz_loops_thread;
+//CString Fuzz_loops_thread;
 
 
 void ParseDataFromFunctionDB(CString lpFileName, CString readdata);
@@ -166,6 +167,7 @@ BEGIN_MESSAGE_MAP(CBSODDlg, CDialog)
 	ON_BN_CLICKED(IDC_BTN_XML_DEL, &CBSODDlg::OnBnClickedBtnXmlDel)
 	ON_BN_CLICKED(IDC_BTN_XML_FUZZ, &CBSODDlg::OnBnClickedBtnXmlFuzz)
 	ON_BN_CLICKED(IDC_BTN_DEL_LOG, &CBSODDlg::OnBnClickedBtnDelLog)
+	ON_EN_CHANGE(IDC_EDIT_FUZZER_LOOPS, &CBSODDlg::OnEnChangeEditFuzzerLoops)
 END_MESSAGE_MAP()
 
 
@@ -217,7 +219,7 @@ BOOL CBSODDlg::OnInitDialog()
 
 	OnInitLogPath ();
 	//MessageBox (sLogPath);
-	OnInitData ();
+	OnInitData ();//初始化 函数所在文件functions.db 以及方便 MainFuzz ()创建线程
 
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
@@ -288,6 +290,7 @@ void CBSODDlg::OnSysCommand(UINT nID, LPARAM lParam)
 }
 
 //写log函数
+//int CBSODDlg::WriteLog(LPCTSTR lpFileName, LPCTSTR writedata)
 int CBSODDlg::WriteLog(LPCTSTR lpFileName, LPCTSTR writedata)
 {
 	CString Temp;
@@ -484,13 +487,13 @@ void CBSODDlg::OnBnClickedAddFunction()
 		{
 			m_Function_List.AddString (m_Function_Input);
 			WriteLog (m_Log_Path, m_Function_Input+_T(" found."));
-			MessageBox (_T("添加成功！"));
+			MessageBox (_T("添加函数成功！"), _T("成功"), MB_OK);
 		}
 
 	}
 	else
 	{
-		MessageBox (_T("无此函数，请重新输入！"));
+		MessageBox (_T("无此函数，请重新输入！"), _T("成功"), MB_OK);
 	}
 	
 	
@@ -558,12 +561,15 @@ void CBSODDlg::OnLbnSelchangeListToTest()
 	CString temp;
 	// TODO: Add your control notification handler code here
 	int nIndex = m_Function_List.GetCurSel();
-	m_Function_List.GetText (nIndex, temp);
-	//MessageBox (temp);
-	//ParseDataFromFunctionDB(_T("functions.db"),temp);
-	ParseDataFromFunctionDB(sFunctionDBfile,temp);
+	if (nIndex >= 0)
+	{
+		m_Function_List.GetText (nIndex, temp);
+		//ParseDataFromFunctionDB(_T("functions.db"),temp);
+		ParseDataFromFunctionDB(sFunctionDBfile,temp);
 
-	UpdateData (FALSE);
+		UpdateData (FALSE);
+	}
+
 	//选中ListBox列表中，当前选择的下一条目
 	//int nCount = m_Function_List.GetCount();
 	//if ((nIndex != LB_ERR) && (nCount > 1))
@@ -776,9 +782,11 @@ void CBSODDlg::OnBnClickedFuzz()
 {
 	UpdateData (TRUE);
 	OnInitData ();
-
+	CString sTemp;
+	sTemp.Format (_T("%d"), Fuzz_loops);
+	MessageBox (sTemp);
 	CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)MainFuzz,NULL,0,NULL);
-	Msg("Fuzz 测试结束！");
+	//Msg("Fuzz 测试结束！");
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//功能：获得Clist框中的“函数数目”，并将每一个函数名放到Vector中
@@ -950,16 +958,38 @@ void CBSODDlg::OnBnClickedFuzz()
 void CBSODDlg::OnBnClickedRmButton()
 {
 	// TODO: Add your control notification handler code here
+	//把光标选定的item字符串取出来放在cstring里
+	//GetText 用法参看MSDN CListBox::GetText 
 	int Index = m_Function_List.GetCurSel ();
-	if ( LB_ERR == m_Function_List.DeleteString (Index) )
+	if (Index >= 0)
 	{
-		MessageBox (_T("删除出错!"));
-	}
-	m_Function_Name = _T("");
-	m_Function_Args = _T("");
-	m_Function_DllName = _T("");
+		//int n = m_Function_List.GetTextLen (Index);
+		//CString sTemp, sName;
+		//m_Function_List.GetText (Index, sTemp.GetBuffer (n));
+		CString sName;
+		m_Function_List.GetText (Index, sName);
 
-	UpdateData (FALSE);
+		if ( LB_ERR == m_Function_List.DeleteString (Index) )
+		{
+			MessageBox (_T("删除函数失败！"), _T("友情提示"), MB_OK);
+		}
+		else
+		{
+			m_Function_Name = _T("");
+			m_Function_Args = _T("");
+			m_Function_DllName = _T("");
+			sName += _T(" removed.");
+			WriteLog (m_Log_Path, sName);
+			//sTemp.ReleaseBuffer ();
+			//WriteLog (m_Log_Path, _T("test."));
+			UpdateData (FALSE);
+		}
+	}
+	else
+	{
+		MessageBox (_T("请选中要删除的函数！"), _T("友情提示"), MB_OK);
+	}
+	
 }
 CString CBSODDlg::BootOpenDialog()
 {
@@ -973,15 +1003,34 @@ CString CBSODDlg::BootOpenDialog()
 
 	return sFilePath;
 }
+CString CBSODDlg::BootSaveAsDialog()
+{
+	CString sFilePath = _T("");
+	CFileDialog dlgFile(FALSE, NULL, NULL, OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_NOCHANGEDIR, _T("All Files (*.*)|*.*||"), NULL);
+
+	if (dlgFile.DoModal())
+	{
+		sFilePath = dlgFile.GetPathName ();
+	}
+
+	return sFilePath;
+}
 void CBSODDlg::OnBnClickedBtnBrowse()
 {
 	m_Xml_Path = BootOpenDialog ();
 	UpdateData (FALSE);
 	
-	AddXmlToList(m_Xml_Path);
-	
-	m_Xml_Path = _T("");
-	UpdateData (FALSE);
+	if (m_Xml_Path != _T(""))
+	{
+		AddXmlToList(m_Xml_Path);
+		WriteLog(m_Log_Path, m_Xml_Path + _T(" added."));
+		m_Xml_Path = _T("");
+		UpdateData (FALSE);
+	}
+	else
+	{
+		//MessageBox (_T("请函数的XML文件！"), _T("友情提示"), MB_OK);
+	}
 	// TODO: Add your control notification handler code here
 }
 void CBSODDlg::AddXmlToList(CString m_Xml_Path)
@@ -1053,11 +1102,18 @@ void CBSODDlg::OnBnClickedBtnXmlSave()
 	Xml_Path = m_List_Xml.GetItemText (m_ListIndex, 1);
 
 	CStdioFile xmlFile;
-	xmlFile.Open (Xml_Path, CFile::modeReadWrite);
-	UpdateData (TRUE);
-
-	xmlFile.WriteString (m_RichEdit);
-	xmlFile.Close ();
+	
+	if (xmlFile.Open (Xml_Path, CFile::modeReadWrite))
+	{
+		xmlFile.WriteString (m_RichEdit);
+		xmlFile.Close ();
+		WriteLog (m_Log_Path, Xml_Path + _T(" saved."));
+	}
+	else
+	{
+		MessageBox (_T("请先添加要编辑的XML！"), _T("友情提示"), MB_OK);
+	}
+	//UpdateData (TRUE);
 }
 
 void CBSODDlg::OnBnClickedBtnXmlSaveAs()
@@ -1067,17 +1123,51 @@ void CBSODDlg::OnBnClickedBtnXmlSaveAs()
 
 	//CFileDialog FileDlg(false,_T("txt"),NULL,OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT|OFN_NOCHANGEDIR,
 	//	szFilter,NULL);
+	CString XmlSaveAs;
+	XmlSaveAs = BootSaveAsDialog ();
+	//UpdateData (FALSE);
+
+	CStdioFile xmlFile;
+
+	if (xmlFile.Open (XmlSaveAs, CFile::modeCreate|CFile::modeReadWrite))
+	{
+		xmlFile.WriteString (m_RichEdit);
+		xmlFile.Close ();
+		WriteLog (m_Log_Path, XmlSaveAs + _T(" saved."));
+	}
+	else
+	{
+		MessageBox (_T("请保存XML失败！"), _T("友情提示"), MB_OK);
+	}
+	//AddXmlToList(m_Xml_Path);
+	//WriteLog(m_Log_Path, m_Xml_Path + _T(" added."));
+	//m_Xml_Path = _T("");
+	//UpdateData (FALSE);
 }
 
 void CBSODDlg::OnBnClickedBtnXmlDel()
 {
 	// TODO: Add your control notification handler code here
-	m_List_Xml.DeleteItem (m_ListIndex);
+	if (m_ListIndex >= 0)
+	{
+		CString sTemp;
+		sTemp = m_List_Xml.GetItemText (m_ListIndex, 1);
+		
+		if (m_List_Xml.DeleteItem (m_ListIndex))
+		{
+			WriteLog (m_Log_Path, sTemp + _T(" removed."));
 
-	//清空RichEdit的内容
-	m_Xml_Path = _T("");
-	m_RichEdit = _T("");
-	UpdateData (FALSE);
+			//清空RichEdit的内容
+			m_Xml_Path = _T("");
+			m_RichEdit = _T("");
+			UpdateData (FALSE);
+		}
+	}
+	else
+	{
+		MessageBox (_T("请选中要删除的XML文件！"), _T("友情提示"), MB_OK);
+	}
+
 }
 void CBSODDlg::ParseXmlData(CString m_Xml_Path)
 {
@@ -1131,7 +1221,7 @@ void CBSODDlg::ParseXmlData(CString m_Xml_Path)
 	::CoUninitialize ();
 */
 
-	m_Xml_Path = _T("c:\\functions.xml");
+	//m_Xml_Path = _T("c:\\functions.xml");
 	//m_Xml_Path = _T("c:\\people.xml");
 	BSTR    name, content;
 	MSXML2::DOMNodeType type;
@@ -1418,26 +1508,25 @@ void CBSODDlg::FuzzXmlData()
 	DWORD dTemp = 0;
 	int ESP_Size = 0;
 
-	for (int i=0;i<Fuzz_loops;i++)
+
+	for (int k=Fuzz_Param.size ()-1;k>=0;k--)
 	{
-		for (int k=Fuzz_Param.size ()-1;k>=0;k--)
-		{
-			dTemp = Fuzz_Param.at (k);
-			ESP_Size += sizeof(dTemp);
-			__asm{
-				mov edx,dTemp;
-				push edx;
-			}
-		}
-		if (_T("NtCreateFile") == Fuzz_FunName)
-		{
-			__asm{
-				call pZwCreateFile;
-				mov  eax ,ESP_Size;
-				add esp,eax;
-			}
+		dTemp = Fuzz_Param.at (k);
+		ESP_Size += sizeof(dTemp);
+		__asm{
+			mov edx,dTemp;
+			push edx;
 		}
 	}
+	if (_T("NtCreateFile") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwCreateFile;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
+
 
 	delete poa;
 	delete pio;
@@ -1448,8 +1537,25 @@ void CBSODDlg::FuzzXmlData()
 void CBSODDlg::OnBnClickedBtnXmlFuzz()
 {
 	// TODO: Add your control notification handler code here
-	ParseXmlData (m_Xml_Path);
-	FuzzXmlData ();
+	UpdateData (TRUE);
+	int dXmlCount = m_List_Xml.GetItemCount ();
+	if ( m_List_Xml.GetItemCount () )
+	{
+		for (int i=0;i<dXmlCount;i++)//遍历每个XML文件
+		{
+			m_Xml_Path = m_List_Xml.GetItemText (i, 1);
+			for (int j=0;j<Fuzz_loops;j++)
+			{
+				ParseXmlData (m_Xml_Path);
+				FuzzXmlData ();
+			}//Fuzz次数结束
+		}//结束 遍历每个XML文件
+		MessageBox (_T("FUZZ XML结束！所有函数通过了测试！"), _T("友情提示"), MB_OK);
+	}
+	else
+	{
+		MessageBox (_T("请添加函数的XML文件！"), _T("友情提示"), MB_OK);
+	}
 }
 
 void CBSODDlg::OnBnClickedBtnDelLog()
@@ -1458,4 +1564,17 @@ void CBSODDlg::OnBnClickedBtnDelLog()
 	DeleteFile(m_Log_Path);
 	m_Log_Content = _T("");
 	UpdateData (FALSE);
+}
+
+void CBSODDlg::OnEnChangeEditFuzzerLoops()
+{
+	// TODO:  If this is a RICHEDIT control, the control will not
+	// send this notification unless you override the CDialog::OnInitDialog()
+	// function and call CRichEditCtrl().SetEventMask()
+	// with the ENM_CHANGE flag ORed into the mask.
+
+	// TODO:  Add your control notification handler code here
+	UpdateData (TRUE);
+// 	CString sTemp;
+// 	sTemp = Fuzz_loops;
 }
