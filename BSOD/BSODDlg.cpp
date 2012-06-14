@@ -61,8 +61,8 @@ GetAnyDword()
 {
 	//D   - the argument is probed in range 0x00000000 - 0xFFFFFFFF  0~4294967295
 	DWORD dTemp;
-	//srand((int)time(0));
-	srand(g_Fuzz_seed);
+	srand((int)time(0));
+	//srand(g_Fuzz_seed);
 
 	dTemp = (rand () * rand ()) % 0xFFFFFFFF;
 	return dTemp;
@@ -74,8 +74,8 @@ GetAnyPArg()
 {
 	//P   - the argument is probed in range 0x00000001 - 0xFFFFFF00  1~4294967040
 	DWORD dTemp;
-	//srand((int)time(0));
-	srand(g_Fuzz_seed);
+	srand((int)time(0));
+	//srand(g_Fuzz_seed);
 
 	dTemp = (rand () * rand ()) % 0xFFFFFF00;
 	return dTemp;
@@ -87,8 +87,8 @@ GetAnyBArg()
 {
 	//B   - the argument is probed in range 0x7FFF0001 - 0xFFFFFFFF  2147418113~4294967295
 	DWORD dTemp;
-	//srand((int)time(0));
-	srand(g_Fuzz_seed);
+	srand((int)time(0));
+	//srand(g_Fuzz_seed);
 
 	dTemp = (rand () + 2147418113) % 0xFFFFFFFF;
 	return dTemp;
@@ -234,6 +234,7 @@ BOOL CBSODDlg::OnInitDialog()
 
 	((CButton*)GetDlgItem(IDC_CHECK_LOOPS))->SetCheck(TRUE);
 	((CButton*)GetDlgItem(IDC_CHECK_LOG))->SetCheck(TRUE);
+	((CButton*)GetDlgItem(IDC_CHECK_AGREE))->SetCheck(TRUE);
 
 	OnInitLogPath ();
 	//MessageBox (sLogPath);

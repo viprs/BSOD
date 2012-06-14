@@ -60,13 +60,52 @@ using namespace std;
 //	ff.Close();
 //}
 
+DWORD g_Fuzz_seed;
 
+DWORD
+GetInitDword()
+{
+	//D   - the argument is probed in range 0x00000000 - 0xFFFFFFFF  0~4294967295
+	DWORD dTemp;
+	srand((int)time(0));
 
+	dTemp = (rand () * rand ()) % 0xFFFFFFFF;
+	return dTemp;
+	//return 333444444;
+}
+DWORD
+GetAnyDword()
+{
+	//D   - the argument is probed in range 0x00000000 - 0xFFFFFFFF  0~4294967295
+	DWORD dTemp;
+	//srand((int)time(0));
+	srand(g_Fuzz_seed);
 
+	dTemp = (rand () * rand ()) % 0xFFFFFFFF;
+	return dTemp;
+	//return 333444444;
+}
+
+DWORD
+GetAnyPArg()
+{
+	//P   - the argument is probed in range 0x00000001 - 0xFFFFFF00  1~4294967040
+	DWORD dTemp;
+	//srand((int)time(0));
+	srand(g_Fuzz_seed);
+
+	dTemp = (rand () * rand ()) % 0xFFFFFF00;
+	return dTemp;
+	//return 333444444;
+}
 void 
 main()
 {
-
+	g_Fuzz_seed = GetInitDword ();
+	for (int i=0;i<10; i++)
+	{
+		printf ("%")
+	}
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	//DWORD dwLen = 4,test;
 	//BYTE* pbBuffer =(BYTE*) malloc (4*sizeof(BYTE));
