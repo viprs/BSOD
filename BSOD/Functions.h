@@ -43,7 +43,8 @@ LONG
 						  __in_opt PVOID  EaBuffer,
 						  __in ULONG  EaLength
 						  );
-LONG pZwCreateFile(
+LONG
+pZwCreateFile(
 			  __out PHANDLE  FileHandle,
 			  __in ACCESS_MASK  DesiredAccess,
 			  __in POBJECT_ATTRIBUTES  ObjectAttributes,
@@ -55,6 +56,48 @@ LONG pZwCreateFile(
 			  __in ULONG  CreateOptions,
 			  __in_opt PVOID  EaBuffer,
 			  __in ULONG  EaLength);
+
+typedef
+LONG
+(WINAPI* DefZwCreateKey)(
+						 PHANDLE KeyHandle,
+						 ACCESS_MASK DesiredAccess,
+						 POBJECT_ATTRIBUTES ObjectAttributes,
+						 ULONG TitleIndex,
+						 PUNICODE_STRING Class,
+						 ULONG CreateOptions,
+						 PULONG Disposition);
+LONG
+pZwCreateKey(
+			 PHANDLE KeyHandle,
+			 ACCESS_MASK DesiredAccess,
+			 POBJECT_ATTRIBUTES ObjectAttributes,
+			 ULONG TitleIndex,
+			 PUNICODE_STRING Class,
+			 ULONG CreateOptions,
+			 PULONG Disposition);
+typedef
+LONG
+(WINAPI *DefZwCreateSection)(
+				OUT PHANDLE  SectionHandle,
+				IN ACCESS_MASK  DesiredAccess,
+				IN POBJECT_ATTRIBUTES  ObjectAttributes  OPTIONAL,
+				IN PLARGE_INTEGER  MaximumSize  OPTIONAL,
+				IN ULONG  SectionPageProtection,
+				IN ULONG  AllocationAttributes,
+				IN HANDLE  FileHandle  OPTIONAL
+				); 
+LONG
+pZwCreateSection(
+				OUT PHANDLE  SectionHandle,
+				IN ACCESS_MASK  DesiredAccess,
+				IN POBJECT_ATTRIBUTES  ObjectAttributes  OPTIONAL,
+				IN PLARGE_INTEGER  MaximumSize  OPTIONAL,
+				IN ULONG  SectionPageProtection,
+				IN ULONG  AllocationAttributes,
+				IN HANDLE  FileHandle  OPTIONAL
+				); 
+
 
 typedef
 LONG 
@@ -98,6 +141,27 @@ LONG pZwCreatePort(
 					ULONG MaxDataSize,
 					ULONG MaxMessageSize,
 					ULONG Reserved);
+typedef
+LONG
+(WINAPI *DefZwDeleteFile)(
+			 IN POBJECT_ATTRIBUTES  ObjectAttributes
+			 );
+LONG
+pZwDeleteFile(
+			 IN POBJECT_ATTRIBUTES  ObjectAttributes
+			 );
+typedef
+LONG
+(WINAPI *DefZwDeleteKey)(
+			IN HANDLE  KeyHandle
+			);
+LONG
+pZwDeleteKey(
+			IN HANDLE  KeyHandle
+			);
+
+
+
 typedef
 LONG
 (WINAPI *DefZwDeleteValueKey)(

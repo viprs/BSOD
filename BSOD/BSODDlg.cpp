@@ -46,6 +46,17 @@ void ParseDataFromFunctionDB(CString lpFileName, CString readdata);
 #
 */
 DWORD
+GetInitDword()
+{
+	//D   - the argument is probed in range 0x00000000 - 0xFFFFFFFF  0~4294967295
+	DWORD dTemp;
+	srand((int)time(0));
+
+	dTemp = (rand () * rand ()) % 0xFFFFFFFF;
+	return dTemp;
+	//return 333444444;
+}
+DWORD
 GetAnyDword()
 {
 	//D   - the argument is probed in range 0x00000000 - 0xFFFFFFFF  0~4294967295
@@ -130,7 +141,7 @@ CBSODDlg::CBSODDlg(CWnd* pParent /*=NULL*/)
 	, m_Function_Args(_T(""))
 	, m_Function_DllName(_T(""))
 	, Fuzz_loops(1)
-	, Fuzz_seed(GetAnyDword ())
+	, Fuzz_seed(GetInitDword ())
 	, m_Xml_Path(_T(""))
 	, m_RichEdit(_T(""))
 	, m_Log_Path(_T(""))
@@ -755,6 +766,22 @@ void MainFuzz()
 					add esp,eax;
 				}
 			}
+			if (_T("NtCreateKey") == vFuzzList.at (i))
+			{
+				__asm{
+					call pZwCreateKey;
+					mov  eax ,ESP_Size;
+					add esp,eax;
+				}
+			}
+			if (_T("NtCreateSection") == vFuzzList.at (i))
+			{
+				__asm{
+					call pZwCreateSection;
+					mov  eax ,ESP_Size;
+					add esp,eax;
+				}
+			}
 			if (_T("NtAdjustPrivilegesToken") == vFuzzList.at (i))
 			{
 				__asm{
@@ -799,6 +826,22 @@ void MainFuzz()
 			{
 				__asm{
 					call pZwCreatePort;
+					mov  eax ,ESP_Size;
+					add esp,eax;
+				}
+			}
+			if (_T("NtDeleteFile") == vFuzzList.at (i))
+			{
+				__asm{
+					call pZwDeleteFile;
+					mov  eax ,ESP_Size;
+					add esp,eax;
+				}
+			}
+			if (_T("NtDeleteKey") == vFuzzList.at (i))
+			{
+				__asm{
+					call pZwDeleteKey;
 					mov  eax ,ESP_Size;
 					add esp,eax;
 				}
@@ -1554,6 +1597,11 @@ void CBSODDlg::FuzzXmlData()
 					Fuzz_Param.push_back ((DWORD)pus);
 					continue;
 				}
+				if (itTemp != fuzzFuncMapit->second->end() && itTemp->second == _T("PULONG"))
+				{
+					Fuzz_Param.push_back ((DWORD)GetAnyDword ());
+					continue;
+				}
 			}
 			else
 			{ 
@@ -1586,6 +1634,22 @@ void CBSODDlg::FuzzXmlData()
 	{
 		__asm{
 			call pZwCreateFile;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
+	if (_T("NtCreateKey") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwCreateKey;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
+	if (_T("NtCreateSection") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwCreateSection;
 			mov  eax ,ESP_Size;
 			add esp,eax;
 		}
@@ -1634,6 +1698,22 @@ void CBSODDlg::FuzzXmlData()
 	{
 		__asm{
 			call pZwCreatePort;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
+	if (_T("NtDeleteFile") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwDeleteFile;
+			mov  eax ,ESP_Size;
+			add esp,eax;
+		}
+	}
+	if (_T("NtDeleteKey") == Fuzz_FunName)
+	{
+		__asm{
+			call pZwDeleteKey;
 			mov  eax ,ESP_Size;
 			add esp,eax;
 		}

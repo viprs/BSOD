@@ -107,6 +107,136 @@ pZwCreateFile(
 	return TRUE;
 }
 
+LONG
+pZwCreateKey(
+			 PHANDLE KeyHandle,
+			 ACCESS_MASK DesiredAccess,
+			 POBJECT_ATTRIBUTES ObjectAttributes,
+			 ULONG TitleIndex,
+			 PUNICODE_STRING Class,
+			 ULONG CreateOptions,
+			 PULONG Disposition)
+{
+	DefZwCreateKey pNtCreateKey = (DefZwCreateKey) GetProcAddress (GetModuleHandle(_T("ntdll.dll")), "NtCreateKey");
+	if (pNtCreateKey != NULL)
+	{
+		LONG lRet = pNtCreateKey(
+					KeyHandle,
+					DesiredAccess,
+					ObjectAttributes,
+					TitleIndex,
+					Class,
+					CreateOptions,
+					Disposition);
+		if (lRet >= 0)
+		{
+			AfxMessageBox (_T("pNtCreateFile success\n"));
+		}
+		else
+		{
+			//printf ("pNtCreateFile fail\n");
+			//MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
+		}
+	} 
+	else
+	{
+		AfxMessageBox (_T("DefZwCreateFile GetProcAddress ntdll fail\n"));
+	}
+
+	return TRUE;
+}
+LONG
+pZwCreateSection(
+				 OUT PHANDLE  SectionHandle,
+				 IN ACCESS_MASK  DesiredAccess,
+				 IN POBJECT_ATTRIBUTES  ObjectAttributes  OPTIONAL,
+				 IN PLARGE_INTEGER  MaximumSize  OPTIONAL,
+				 IN ULONG  SectionPageProtection,
+				 IN ULONG  AllocationAttributes,
+				 IN HANDLE  FileHandle  OPTIONAL
+				 )
+{
+	DefZwCreateSection pNtCreateSection = (DefZwCreateSection) GetProcAddress (GetModuleHandle(_T("ntdll.dll")), "NtCreateSection");
+	if (pNtCreateSection != NULL)
+	{
+		LONG lRet = pNtCreateSection(
+			SectionHandle,
+			DesiredAccess,
+			ObjectAttributes,
+			MaximumSize,
+			SectionPageProtection,
+			AllocationAttributes,
+			FileHandle);
+		if (lRet >= 0)
+		{
+			AfxMessageBox (_T("pNtCreateSection success\n"));
+		}
+		else
+		{
+			//printf ("pNtCreateFile fail\n");
+			//MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
+		}
+	} 
+	else
+	{
+		AfxMessageBox (_T("pNtCreateSection GetProcAddress ntdll fail\n"));
+	}
+
+	return TRUE;
+}
+LONG
+pZwDeleteFile(
+			 IN POBJECT_ATTRIBUTES  ObjectAttributes
+			 )
+{
+	DefZwDeleteFile pNtDeleteFile = (DefZwDeleteFile) GetProcAddress (GetModuleHandle(_T("ntdll.dll")), "NtDeleteFile");
+	if (pNtDeleteFile != NULL)
+	{
+		LONG lRet = pNtDeleteFile(ObjectAttributes);
+		if (lRet >= 0)
+		{
+			AfxMessageBox (_T("pNtDeleteFile success\n"));
+		}
+		else
+		{
+			//printf ("pNtCreateFile fail\n");
+			//MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
+		}
+	} 
+	else
+	{
+		AfxMessageBox (_T("pNtDeleteFile GetProcAddress ntdll fail\n"));
+	}
+
+	return TRUE;
+}
+LONG
+pZwDeleteKey(
+			 IN HANDLE  KeyHandle
+			 )
+{
+	DefZwDeleteKey pNtDeleteKey = (DefZwDeleteKey) GetProcAddress (GetModuleHandle(_T("ntdll.dll")), "NtDeleteKey");
+	if (pNtDeleteKey != NULL)
+	{
+		LONG lRet = pNtDeleteKey(KeyHandle);
+		if (lRet >= 0)
+		{
+			AfxMessageBox (_T("pNtDeleteKey success\n"));
+		}
+		else
+		{
+			//printf ("pNtCreateFile fail\n");
+			//MessageBox(NULL, _T("Fail!"), _T("Error"), MB_OK);
+		}
+	} 
+	else
+	{
+		AfxMessageBox (_T("pNtDeleteKey GetProcAddress ntdll fail\n"));
+	}
+
+	return TRUE;
+}
+
 //LONG
 //pZwCreateProcess(
 //				 PHANDLE ProcessHandle,
